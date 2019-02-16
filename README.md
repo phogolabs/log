@@ -24,7 +24,7 @@ import (
 
 log.SetHandler(console.New(os.Stdout))
 
-logger := log.WithFields(log.F("app", "service-api")
+logger := log.WithFields(log.F("app", "service-api"))
 logger.Info("Hello")
 ```
 
