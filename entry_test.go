@@ -30,6 +30,42 @@ var _ = Describe("CompositeHandler", func() {
 	})
 })
 
+var _ = Describe("LevelHandler", func() {
+	var (
+		composite *log.LevelHandler
+		handler   *fake.Handler
+	)
+
+	BeforeEach(func() {
+		handler = &fake.Handler{}
+		composite = &log.LevelHandler{
+			Level:   log.InfoLevel,
+			Handler: handler,
+		}
+	})
+
+	Context("when the entry's level < Info", func() {
+		It("does not delegate to the underlying handler", func() {
+			entry := log.Entry{Level: log.DebugLevel}
+
+			composite.Handle(&entry)
+
+			Expect(handler.HandleCallCount()).To(Equal(0))
+		})
+	})
+
+	Context("when the entry's level >= Info", func() {
+		It("does not delegate to the underlying handler", func() {
+			entry := log.Entry{Level: log.InfoLevel}
+
+			composite.Handle(&entry)
+
+			Expect(handler.HandleCallCount()).To(Equal(1))
+			Expect(handler.HandleArgsForCall(0)).To(Equal(&entry))
+		})
+	})
+})
+
 var _ = Describe("Entry", func() {
 	var (
 		entry   log.Entry

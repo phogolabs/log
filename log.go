@@ -8,8 +8,8 @@ import (
 // standard logger
 var std = Entry{
 	Timestamp: time.Now(),
-	Level:     InfoLevel,
 	Exit:      os.Exit,
+	Handler:   &LevelHandler{Level: InfoLevel},
 }
 
 // SetExitFn sets the exit function. default: os.Exit
@@ -17,9 +17,16 @@ func SetExitFn(fn ExitFunc) {
 	std.Exit = fn
 }
 
+// SetLevel sets the level handler
+func SetLevel(level Level) {
+	leveled := std.Handler.(*LevelHandler)
+	leveled.Level = level
+}
+
 // SetHandler sets the handler
 func SetHandler(handler Handler) {
-	std.Handler = handler
+	leveled := std.Handler.(*LevelHandler)
+	leveled.Handler = handler
 }
 
 // SetDefaultFields sets the default fields

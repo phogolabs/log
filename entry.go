@@ -53,6 +53,21 @@ func (handlers CompositeHandler) Handle(e *Entry) {
 	}
 }
 
+// LevelHandler handles entries for given level
+type LevelHandler struct {
+	Level   Level
+	Handler Handler
+}
+
+// Handle handles the entry
+func (h *LevelHandler) Handle(e *Entry) {
+	if e.Level < h.Level {
+		return
+	}
+
+	h.Handler.Handle(e)
+}
+
 // Entry defines a single log entry
 type Entry struct {
 	Message   string    `json:"message"`

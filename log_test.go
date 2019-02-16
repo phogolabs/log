@@ -16,13 +16,13 @@ var _ = Describe("Log", func() {
 	BeforeEach(func() {
 		handler = &fake.Handler{}
 
+		log.SetLevel(log.DebugLevel)
 		log.SetHandler(handler)
 		log.SetExitFn(func(code int) {
 			Expect(code).To(Equal(1))
 		})
 
 		log.SetDefaultFields()
-		// log.SetDefaultFieldsWithMap(log.M{"version": "beta"})
 	})
 
 	Describe("SetDefaultFields", func() {
@@ -46,6 +46,15 @@ var _ = Describe("Log", func() {
 			Expect(e.Fields).To(HaveLen(2))
 			Expect(e.Fields).To(ContainElement(log.F("app", "ginkgo")))
 			Expect(e.Fields).To(ContainElement(log.F("version", "beta")))
+		})
+	})
+
+	Describe("SetLevel", func() {
+		It("sets the level", func() {
+			log.SetLevel(log.ErrorLevel)
+			log.Info("oh no!")
+
+			Expect(handler.HandleCallCount()).To(Equal(0))
 		})
 	})
 
