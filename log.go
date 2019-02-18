@@ -9,7 +9,10 @@ import (
 var std = Entry{
 	Timestamp: time.Now(),
 	Exit:      os.Exit,
-	Handler:   &LevelHandler{Level: InfoLevel},
+	Handler: &LevelHandler{
+		Level:   DebugLevel,
+		Handler: &DefaultHandler{},
+	},
 }
 
 // SetExitFn sets the exit function. default: os.Exit

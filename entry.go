@@ -1,7 +1,9 @@
 package log
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -53,6 +55,8 @@ func (handlers CompositeHandler) Handle(e *Entry) {
 	}
 }
 
+var _ Handler = &LevelHandler{}
+
 // LevelHandler handles entries for given level
 type LevelHandler struct {
 	Level   Level
@@ -68,11 +72,23 @@ func (h *LevelHandler) Handle(e *Entry) {
 	h.Handler.Handle(e)
 }
 
+var _ Handler = &DefaultHandler{}
+
+// DefaultHandler represents the default handler
+type DefaultHandler struct{}
+
+// Handle handles the entry
+func (h *DefaultHandler) Handle(e *Entry) {
+	data, _ := json.Marshal(e)
+	log.SetFlags(0)
+	log.Println(string(data))
+}
+
 // Entry defines a single log entry
 type Entry struct {
 	Message   string    `json:"message"`
 	Timestamp time.Time `json:"timestamp"`
-	Fields    []Field   `json:"fields"`
+	Fields    []Field   `json:"fields,omitempty"`
 	Level     Level     `json:"level"`
 	Exit      ExitFunc  `json:"-"`
 	Handler   Handler   `json:"-"`

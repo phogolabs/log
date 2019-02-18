@@ -174,3 +174,16 @@ var _ = Describe("Log", func() {
 	DescribeOperation(log.FatalLevel)
 	DescribeOperation(log.ErrorLevel)
 })
+
+var _ = Describe("DefaultHandler", func() {
+	var handler *log.DefaultHandler
+
+	BeforeEach(func() {
+		handler = &log.DefaultHandler{}
+	})
+
+	It("logs entry", func() {
+		entry := &log.Entry{}
+		handler.Handle(entry)
+	})
+})
