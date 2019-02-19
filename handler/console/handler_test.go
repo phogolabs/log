@@ -24,6 +24,9 @@ var _ = Describe("Handler", func() {
 		buffer = &bytes.Buffer{}
 		handler = console.New(buffer)
 
+		handler.SetDisplayColor(true)
+		handler.SetTimestampFormat(time.UnixDate)
+
 		entry = &log.Entry{
 			Message:   "hello",
 			Timestamp: time.Now(),
