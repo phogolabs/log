@@ -3,6 +3,8 @@ package fake
 
 import (
 	"sync"
+
+	"github.com/phogolabs/log/handler/rollbar"
 )
 
 type Client struct {
@@ -66,3 +68,5 @@ func (fake *Client) recordInvocation(key string, args []interface{}) {
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ rollbar.Client = new(Client)

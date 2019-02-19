@@ -41,7 +41,10 @@ const (
 
 var _ log.Handler = &Handler{}
 
-type syslog interface {
+//go:generate counterfeiter -fake-name Syslogger -o ../../fake/syslogger.go . Syslogger
+
+// Syslogger writer
+type Syslogger interface {
 	Alert(m string) error
 	Crit(m string) error
 	Debug(m string) error
@@ -50,6 +53,7 @@ type syslog interface {
 	Info(m string) error
 	Notice(m string) error
 	Warning(m string) error
+	Write(p []byte) (n int, err error)
 }
 
 // Handler is an instance of the console logger
@@ -168,7 +172,7 @@ func (c *Handler) Handle(e *log.Entry) {
 
 	line = append(line, newLine)
 
-	if logger, ok := c.writer.(syslog); ok {
+	if logger, ok := c.writer.(Syslogger); ok {
 		text := string(line)
 
 		switch e.Level {
