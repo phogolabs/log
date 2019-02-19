@@ -98,147 +98,98 @@ func (c *Handler) SetTimestampFormat(format string) {
 func (c *Handler) Handle(e *log.Entry) {
 	var (
 		line  []byte
+		color ansi.EscSeq
 		level string
 	)
 
+	line = append(line, e.Timestamp.Format(c.timestampFormat)...)
+	line = append(line, space)
+
 	if c.displayColor {
-		color := c.colors[e.Level]
-
-		line = append(line, e.Timestamp.Format(c.timestampFormat)...)
-		line = append(line, space)
+		color = c.colors[e.Level]
 		line = append(line, color...)
-
-		level = e.Level.String()
-
-		for i := 0; i < 6-len(level); i++ {
-			line = append(line, space)
-		}
-
-		line = append(line, level...)
-		line = append(line, ansi.Reset...)
-		line = append(line, space)
-		line = append(line, e.Message...)
-
-		for _, f := range e.Fields {
-			line = append(line, space)
-			line = append(line, color...)
-			line = append(line, f.Key...)
-			line = append(line, ansi.Reset...)
-			line = append(line, equals)
-
-			switch t := f.Value.(type) {
-			case string:
-				line = append(line, t...)
-			case int:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int8:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int16:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int32:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int64:
-				line = strconv.AppendInt(line, t, base10)
-			case uint:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint8:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint16:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint32:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint64:
-				line = strconv.AppendUint(line, t, base10)
-			case float32:
-				line = strconv.AppendFloat(line, float64(t), 'f', -1, 32)
-			case float64:
-				line = strconv.AppendFloat(line, t, 'f', -1, 64)
-			case bool:
-				line = strconv.AppendBool(line, t)
-			default:
-				line = append(line, fmt.Sprintf(v, f.Value)...)
-			}
-		}
-
-		line = append(line, newLine)
-	} else {
-		line = append(line, e.Timestamp.Format(c.timestampFormat)...)
-		line = append(line, space)
-
-		level = e.Level.String()
-
-		for i := 0; i < 6-len(level); i++ {
-			line = append(line, space)
-		}
-
-		line = append(line, level...)
-		line = append(line, space)
-		line = append(line, e.Message...)
-
-		for _, f := range e.Fields {
-			line = append(line, space)
-			line = append(line, f.Key...)
-			line = append(line, equals)
-
-			switch t := f.Value.(type) {
-			case string:
-				line = append(line, t...)
-			case int:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int8:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int16:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int32:
-				line = strconv.AppendInt(line, int64(t), base10)
-			case int64:
-				line = strconv.AppendInt(line, t, base10)
-			case uint:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint8:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint16:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint32:
-				line = strconv.AppendUint(line, uint64(t), base10)
-			case uint64:
-				line = strconv.AppendUint(line, t, base10)
-			case float32:
-				line = strconv.AppendFloat(line, float64(t), 'f', -1, 32)
-			case float64:
-				line = strconv.AppendFloat(line, t, 'f', -1, 64)
-			case bool:
-				line = strconv.AppendBool(line, t)
-			default:
-				line = append(line, fmt.Sprintf(v, f.Value)...)
-			}
-		}
-
-		line = append(line, newLine)
 	}
 
-	writer, ok := c.writer.(syslog)
-	if !ok {
-		c.writer.Write(line)
+	level = e.Level.String()
+
+	for i := 0; i < 6-len(level); i++ {
+		line = append(line, space)
+	}
+
+	line = append(line, level...)
+	line = append(line, ansi.Reset...)
+	line = append(line, space)
+	line = append(line, e.Message...)
+
+	for _, f := range e.Fields {
+		line = append(line, space)
+
+		if len(color) > 0 {
+			line = append(line, color...)
+		}
+
+		line = append(line, f.Key...)
+		line = append(line, ansi.Reset...)
+		line = append(line, equals)
+
+		switch t := f.Value.(type) {
+		case string:
+			line = append(line, t...)
+		case int:
+			line = strconv.AppendInt(line, int64(t), base10)
+		case int8:
+			line = strconv.AppendInt(line, int64(t), base10)
+		case int16:
+			line = strconv.AppendInt(line, int64(t), base10)
+		case int32:
+			line = strconv.AppendInt(line, int64(t), base10)
+		case int64:
+			line = strconv.AppendInt(line, t, base10)
+		case uint:
+			line = strconv.AppendUint(line, uint64(t), base10)
+		case uint8:
+			line = strconv.AppendUint(line, uint64(t), base10)
+		case uint16:
+			line = strconv.AppendUint(line, uint64(t), base10)
+		case uint32:
+			line = strconv.AppendUint(line, uint64(t), base10)
+		case uint64:
+			line = strconv.AppendUint(line, t, base10)
+		case float32:
+			line = strconv.AppendFloat(line, float64(t), 'f', -1, 32)
+		case float64:
+			line = strconv.AppendFloat(line, t, 'f', -1, 64)
+		case bool:
+			line = strconv.AppendBool(line, t)
+		default:
+			line = append(line, fmt.Sprintf(v, f.Value)...)
+		}
+	}
+
+	line = append(line, newLine)
+
+	if logger, ok := c.writer.(syslog); ok {
+		text := string(line)
+
+		switch e.Level {
+		case log.DebugLevel:
+			logger.Debug(text)
+		case log.InfoLevel:
+			logger.Info(text)
+		case log.NoticeLevel:
+			logger.Notice(text)
+		case log.WarnLevel:
+			logger.Warning(text)
+		case log.ErrorLevel:
+			logger.Err(text)
+		case log.PanicLevel, log.AlertLevel:
+			logger.Alert(text)
+		case log.FatalLevel:
+			logger.Crit(text)
+		}
+
 		return
 	}
 
-	text := string(line)
-
-	switch e.Level {
-	case log.DebugLevel:
-		writer.Debug(text)
-	case log.InfoLevel:
-		writer.Info(text)
-	case log.NoticeLevel:
-		writer.Notice(text)
-	case log.WarnLevel:
-		writer.Warning(text)
-	case log.ErrorLevel:
-		writer.Err(text)
-	case log.PanicLevel, log.AlertLevel:
-		writer.Alert(text)
-	case log.FatalLevel:
-		writer.Crit(text)
-	}
+	c.writer.Write(line)
 }

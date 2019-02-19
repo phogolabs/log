@@ -2,6 +2,7 @@ package console_test
 
 import (
 	"bytes"
+	"net/url"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -29,6 +30,20 @@ var _ = Describe("Handler", func() {
 			Level:     log.InfoLevel,
 			Fields: []log.Field{
 				log.F("app", "ginkgo"),
+				log.F("int", int(1)),
+				log.F("int8", int8(1)),
+				log.F("int16", int16(1)),
+				log.F("int32", int32(1)),
+				log.F("int64", int64(1)),
+				log.F("uint", uint(1)),
+				log.F("uint8", uint8(1)),
+				log.F("uint16", uint16(1)),
+				log.F("uint32", uint32(1)),
+				log.F("uint64", uint64(1)),
+				log.F("float32", float32(1)),
+				log.F("float64", float64(1)),
+				log.F("bool", true),
+				log.F("url", &url.URL{}),
 			},
 			Handler: handler,
 		}
