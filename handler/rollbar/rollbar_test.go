@@ -57,5 +57,6 @@ var _ = Describe("Rollbar", func() {
 		Entry("info", log.InfoLevel, "info"),
 		Entry("warn", log.WarnLevel, "warning"),
 		Entry("panic", log.PanicLevel, "critical"),
+		Entry("error", log.ErrorLevel, "error"),
 	)
 })
