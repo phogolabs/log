@@ -84,7 +84,7 @@ var _ = Describe("Entry", func() {
 
 	Describe("WithField", func() {
 		It("returns a new entry", func() {
-			e := entry.WithField("app", "service-api")
+			e := entry.WithField("app", "service-api").(log.Entry)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields).To(HaveLen(1))
 			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
@@ -93,7 +93,7 @@ var _ = Describe("Entry", func() {
 
 	Describe("WithFields", func() {
 		It("returns a new entry", func() {
-			e := entry.WithFields(log.F("app", "service-api"))
+			e := entry.WithFields(log.F("app", "service-api")).(log.Entry)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields).To(HaveLen(1))
 			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
@@ -105,7 +105,7 @@ var _ = Describe("Entry", func() {
 			fields := map[string]interface{}{
 				"app": "service-api",
 			}
-			e := entry.WithFieldMap(fields)
+			e := entry.WithFieldMap(fields).(log.Entry)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields).To(HaveLen(1))
 			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
@@ -115,7 +115,7 @@ var _ = Describe("Entry", func() {
 	Describe("WithError", func() {
 		It("returns a new entry", func() {
 			err := fmt.Errorf("oh no!")
-			e := entry.WithError(err)
+			e := entry.WithError(err).(log.Entry)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields).To(HaveLen(2))
 			Expect(e.Fields[0].Key).To(Equal("source"))

@@ -84,6 +84,8 @@ func (h *DefaultHandler) Handle(e *Entry) {
 	log.Println(string(data))
 }
 
+var _ Writer = Entry{}
+
 // Entry defines a single log entry
 type Entry struct {
 	Message   string    `json:"message"`
@@ -95,25 +97,25 @@ type Entry struct {
 }
 
 // WithField returns a new log entry with the supplied field.
-func (e Entry) WithField(key string, value interface{}) Entry {
+func (e Entry) WithField(key string, value interface{}) Writer {
 	e.Fields = append(e.Fields, Field{Key: key, Value: value})
 	return e
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func (e Entry) WithFields(fields ...Field) Entry {
+func (e Entry) WithFields(fields ...Field) Writer {
 	e.Fields = append(e.Fields, fields...)
 	return e
 }
 
 // WithFieldMap returns a new log entry with the supplied fields appended
-func (e Entry) WithFieldMap(m map[string]interface{}) Entry {
+func (e Entry) WithFieldMap(m map[string]interface{}) Writer {
 	e.Fields = append(e.Fields, M(m).Fields()...)
 	return e
 }
 
 // WithError add a minimal stack trace to the log Entry
-func (e Entry) WithError(err error) Entry {
+func (e Entry) WithError(err error) Writer {
 	return e.WithFields(FieldsOfError(err)...)
 }
 

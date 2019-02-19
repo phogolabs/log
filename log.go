@@ -5,6 +5,69 @@ import (
 	"time"
 )
 
+// Writer of the log
+type Writer interface {
+	// WithField returns a new log entry with the supplied field.
+	WithField(key string, value interface{}) Writer
+
+	// WithFields returns a new log entry with the supplied fields appended
+	WithFields(fields ...Field) Writer
+
+	// WithFieldMap returns a new log entry with the supplied fields appended
+	WithFieldMap(m map[string]interface{}) Writer
+
+	// WithError add a minimal stack trace to the log Entry
+	WithError(err error) Writer
+
+	// Debug logs a debug entry
+	Debug(v ...interface{})
+
+	// Debugf logs a debug entry with formatting
+	Debugf(s string, v ...interface{})
+
+	// Info logs a normal. information, entry
+	Info(v ...interface{})
+
+	// Infof logs a normal. information, entry with formatting
+	Infof(s string, v ...interface{})
+
+	// Notice logs a notice log entry
+	Notice(v ...interface{})
+
+	// Noticef logs a notice log entry with formatting
+	Noticef(s string, v ...interface{})
+
+	// Warn logs a warn log entry
+	Warn(v ...interface{})
+
+	// Warnf logs a warn log entry with formatting
+	Warnf(s string, v ...interface{})
+
+	// Panic logs a panic log entry
+	Panic(v ...interface{})
+
+	// Panicf logs a panic log entry with formatting
+	Panicf(s string, v ...interface{})
+
+	// Alert logs an alert log entry
+	Alert(v ...interface{})
+
+	// Alertf logs an alert log entry with formatting
+	Alertf(s string, v ...interface{})
+
+	// Fatal logs a fatal log entry
+	Fatal(v ...interface{})
+
+	// Fatalf logs a fatal log entry with formatting
+	Fatalf(s string, v ...interface{})
+
+	// Error logs an error log entry
+	Error(v ...interface{})
+
+	// Errorf logs an error log entry with formatting
+	Errorf(s string, v ...interface{})
+}
+
 // standard logger
 var std = Entry{
 	Timestamp: time.Now(),
@@ -43,22 +106,22 @@ func SetDefaultFieldsWithMap(m map[string]interface{}) {
 }
 
 // WithField returns a new log entry with the supplied field.
-func WithField(key string, value interface{}) Entry {
+func WithField(key string, value interface{}) Writer {
 	return std.WithField(key, value)
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func WithFields(fields ...Field) Entry {
+func WithFields(fields ...Field) Writer {
 	return std.WithFields(fields...)
 }
 
 // WithFieldMap returns a new log entry with the supplied fields appended
-func WithFieldMap(m map[string]interface{}) Entry {
+func WithFieldMap(m map[string]interface{}) Writer {
 	return std.WithFieldMap(m)
 }
 
 // WithError add a minimal stack trace to the log Entry
-func WithError(err error) Entry {
+func WithError(err error) Writer {
 	return std.WithError(err)
 }
 
