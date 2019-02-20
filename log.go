@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+// Entry defines a single log entry
+type Entry struct {
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Fields    []Field   `json:"fields,omitempty"`
+	Level     Level     `json:"level"`
+}
+
 // Writer of the log
 type Writer interface {
 	// WithField returns a new log entry with the supplied field.
@@ -66,13 +74,15 @@ type Writer interface {
 
 	// Errorf logs an error log entry with formatting
 	Errorf(s string, v ...interface{})
+
+	// Entry returns the entry
+	Entry() Entry
 }
 
 // standard logger
-var std = Entry{
-	Timestamp: time.Now(),
-	Exit:      os.Exit,
-	Handler: &LevelHandler{
+var std = writer{
+	exit: os.Exit,
+	handler: &LevelHandler{
 		Level:   DebugLevel,
 		Handler: &DefaultHandler{},
 	},
@@ -80,29 +90,29 @@ var std = Entry{
 
 // SetExitFn sets the exit function. default: os.Exit
 func SetExitFn(fn ExitFunc) {
-	std.Exit = fn
+	std.exit = fn
 }
 
 // SetLevel sets the level handler
 func SetLevel(level Level) {
-	leveled := std.Handler.(*LevelHandler)
+	leveled := std.handler.(*LevelHandler)
 	leveled.Level = level
 }
 
 // SetHandler sets the handler
 func SetHandler(handler Handler) {
-	leveled := std.Handler.(*LevelHandler)
+	leveled := std.handler.(*LevelHandler)
 	leveled.Handler = handler
 }
 
 // SetDefaultFields sets the default fields
 func SetDefaultFields(field ...Field) {
-	std.Fields = field
+	std.entry.Fields = field
 }
 
 // SetDefaultFieldsWithMap sets the default fields
 func SetDefaultFieldsWithMap(m map[string]interface{}) {
-	std.Fields = M(m).Fields()
+	std.entry.Fields = M(m).Fields()
 }
 
 // WithField returns a new log entry with the supplied field.
@@ -203,4 +213,33 @@ func Error(v ...interface{}) {
 // Errorf logs an error log entry with formatting
 func Errorf(s string, v ...interface{}) {
 	std.Errorf(s, v...)
+}
+
+// ExitFunc is a function called on Panic or Fatal level
+type ExitFunc func(code int)
+
+// Field is a single Field key and value
+type Field struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+}
+
+// F creates a new Field using the supplied key + value.
+// it is shorthand for defining field manually
+func F(key string, value interface{}) Field {
+	return Field{Key: key, Value: value}
+}
+
+// M is a map
+type M map[string]interface{}
+
+// Fields return the map as slice of fields
+func (m M) Fields() []Field {
+	fields := []Field{}
+
+	for key, value := range m {
+		fields = append(fields, F(key, value))
+	}
+
+	return fields
 }

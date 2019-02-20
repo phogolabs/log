@@ -25,8 +25,8 @@ import "context"
 // SOFTWARE.
 
 var (
-	// EntryCtxKey is the context.Context key to store the request log entry.
-	EntryCtxKey = &contextKey{"entry"}
+	// WriterCtxKey is the context.Context key to store the request log entry.
+	WriterCtxKey = &contextKey{"writer"}
 )
 
 // contextKey is a value for use with context.WithValue. It's used as
@@ -42,18 +42,18 @@ func (k *contextKey) String() string {
 }
 
 // SetContext sets a log entry into the provided context
-func SetContext(ctx context.Context, e Entry) context.Context {
-	return context.WithValue(ctx, EntryCtxKey, e)
+func SetContext(ctx context.Context, e Writer) context.Context {
+	return context.WithValue(ctx, WriterCtxKey, e)
 }
 
 // GetContext returns the log Entry found in the context,
 // or a new Default log Entry if none is found
-func GetContext(ctx context.Context) Entry {
-	v := ctx.Value(EntryCtxKey)
+func GetContext(ctx context.Context) Writer {
+	v := ctx.Value(WriterCtxKey)
 
 	if v == nil {
 		v = std
 	}
 
-	return v.(Entry)
+	return v.(Writer)
 }

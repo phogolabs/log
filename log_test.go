@@ -29,11 +29,11 @@ var _ = Describe("Log", func() {
 		It("sets the default fields", func() {
 			log.SetDefaultFields(log.F("app", "ginkgo"))
 
-			e := log.WithField("version", "beta").(log.Entry)
+			e := log.WithField("version", "beta").(log.Writer)
 
-			Expect(e.Fields).To(HaveLen(2))
-			Expect(e.Fields).To(ContainElement(log.F("app", "ginkgo")))
-			Expect(e.Fields).To(ContainElement(log.F("version", "beta")))
+			Expect(e.Entry().Fields).To(HaveLen(2))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "ginkgo")))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("version", "beta")))
 		})
 	})
 
@@ -41,11 +41,11 @@ var _ = Describe("Log", func() {
 		It("sets the default fields", func() {
 			log.SetDefaultFieldsWithMap(log.M{"app": "ginkgo"})
 
-			e := log.WithField("version", "beta").(log.Entry)
+			e := log.WithField("version", "beta").(log.Writer)
 
-			Expect(e.Fields).To(HaveLen(2))
-			Expect(e.Fields).To(ContainElement(log.F("app", "ginkgo")))
-			Expect(e.Fields).To(ContainElement(log.F("version", "beta")))
+			Expect(e.Entry().Fields).To(HaveLen(2))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "ginkgo")))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("version", "beta")))
 		})
 	})
 
@@ -60,17 +60,17 @@ var _ = Describe("Log", func() {
 
 	Describe("WithField", func() {
 		It("returns a new entry", func() {
-			e := log.WithField("address", "service-api").(log.Entry)
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("address", "service-api")))
+			e := log.WithField("address", "service-api").(log.Writer)
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
 		})
 	})
 
 	Describe("WithFields", func() {
 		It("returns a new entry", func() {
-			e := log.WithFields(log.F("address", "service-api")).(log.Entry)
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("address", "service-api")))
+			e := log.WithFields(log.F("address", "service-api")).(log.Writer)
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
 		})
 	})
 
@@ -80,20 +80,20 @@ var _ = Describe("Log", func() {
 				"address": "service-api",
 			}
 
-			e := log.WithFieldMap(fields).(log.Entry)
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("address", "service-api")))
+			e := log.WithFieldMap(fields).(log.Writer)
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
 		})
 	})
 
 	Describe("WithError", func() {
 		It("returns a new entry", func() {
 			err := fmt.Errorf("oh no!")
-			e := log.WithError(err).(log.Entry)
-			Expect(e.Fields).To(HaveLen(2))
-			Expect(e.Fields[0].Key).To(Equal("source"))
-			Expect(e.Fields[1].Key).To(Equal("error"))
-			Expect(e.Fields[1].Value).To(Equal("oh no!"))
+			e := log.WithError(err).(log.Writer)
+			Expect(e.Entry().Fields).To(HaveLen(2))
+			Expect(e.Entry().Fields[0].Key).To(Equal("source"))
+			Expect(e.Entry().Fields[1].Key).To(Equal("error"))
+			Expect(e.Entry().Fields[1].Value).To(Equal("oh no!"))
 		})
 	})
 

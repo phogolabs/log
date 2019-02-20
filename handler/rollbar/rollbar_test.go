@@ -41,7 +41,6 @@ var _ = Describe("Rollbar", func() {
 			Fields: []log.Field{
 				log.F("app", "ginkgo"),
 			},
-			Handler: handler,
 		}
 
 		handler.Handle(entry)

@@ -66,37 +66,41 @@ var _ = Describe("LevelHandler", func() {
 	})
 })
 
-var _ = Describe("Entry", func() {
+var _ = Describe("Writer", func() {
 	var (
 		entry   log.Entry
+		writer  log.Writer
 		handler *fake.Handler
 	)
 
 	BeforeEach(func() {
 		handler = &fake.Handler{}
-		entry = log.Entry{
+
+		config := log.WriterConfig{
 			Handler: handler,
 			Exit: func(code int) {
 				Expect(code).To(Equal(1))
 			},
 		}
+
+		writer = log.NewWriter(&config)
 	})
 
 	Describe("WithField", func() {
 		It("returns a new entry", func() {
-			e := entry.WithField("app", "service-api").(log.Entry)
+			e := writer.WithField("app", "service-api").(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
 		})
 	})
 
 	Describe("WithFields", func() {
 		It("returns a new entry", func() {
-			e := entry.WithFields(log.F("app", "service-api")).(log.Entry)
+			e := writer.WithFields(log.F("app", "service-api")).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
 		})
 	})
 
@@ -105,27 +109,27 @@ var _ = Describe("Entry", func() {
 			fields := map[string]interface{}{
 				"app": "service-api",
 			}
-			e := entry.WithFieldMap(fields).(log.Entry)
+			e := writer.WithFieldMap(fields).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Fields).To(HaveLen(1))
-			Expect(e.Fields).To(ContainElement(log.F("app", "service-api")))
+			Expect(e.Entry().Fields).To(HaveLen(1))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
 		})
 	})
 
 	Describe("WithError", func() {
 		It("returns a new entry", func() {
 			err := fmt.Errorf("oh no!")
-			e := entry.WithError(err).(log.Entry)
+			e := writer.WithError(err).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Fields).To(HaveLen(2))
-			Expect(e.Fields[0].Key).To(Equal("source"))
-			Expect(e.Fields[1].Key).To(Equal("error"))
-			Expect(e.Fields[1].Value).To(Equal("oh no!"))
+			Expect(e.Entry().Fields).To(HaveLen(2))
+			Expect(e.Entry().Fields[0].Key).To(Equal("source"))
+			Expect(e.Entry().Fields[1].Key).To(Equal("error"))
+			Expect(e.Entry().Fields[1].Value).To(Equal("oh no!"))
 		})
 	})
 
 	DescribeOperation := func(level log.Level) {
-		op := func(e log.Entry, v ...interface{}) {
+		op := func(e log.Writer, v ...interface{}) {
 			switch level {
 			case log.DebugLevel:
 				e.Debug(v...)
@@ -146,7 +150,7 @@ var _ = Describe("Entry", func() {
 			}
 		}
 
-		opf := func(e log.Entry, msg string, v ...interface{}) {
+		opf := func(e log.Writer, msg string, v ...interface{}) {
 			switch level {
 			case log.DebugLevel:
 				e.Debugf(msg, v...)
@@ -169,7 +173,7 @@ var _ = Describe("Entry", func() {
 
 		Describe(level.String(), func() {
 			It("writes the message", func() {
-				op(entry, "hello")
+				op(writer, "hello")
 
 				Expect(handler.HandleCallCount()).To(Equal(1))
 
@@ -181,7 +185,7 @@ var _ = Describe("Entry", func() {
 
 			Context("when the message is formatted", func() {
 				It("returns a new entry", func() {
-					opf(entry, "hello, %v", "jack")
+					opf(writer, "hello, %v", "jack")
 
 					Expect(handler.HandleCallCount()).To(Equal(1))
 

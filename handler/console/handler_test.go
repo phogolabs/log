@@ -48,7 +48,6 @@ var _ = Describe("Handler", func() {
 				log.F("bool", true),
 				log.F("url", &url.URL{}),
 			},
-			Handler: handler,
 		}
 	})
 

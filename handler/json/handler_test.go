@@ -31,7 +31,6 @@ var _ = Describe("Handler", func() {
 			Fields: []log.Field{
 				log.F("app", "ginkgo"),
 			},
-			Handler: handler,
 		}
 
 		handler.Handle(entry)

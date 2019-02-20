@@ -11,21 +11,21 @@ import (
 
 var _ = Describe("Context", func() {
 	It("sets the entry", func() {
-		entry := log.Entry{}
+		w := log.NewWriter(&log.WriterConfig{})
 
-		ctx := log.SetContext(context.Background(), entry)
-		Expect(log.GetContext(ctx)).To(Equal(entry))
+		ctx := log.SetContext(context.Background(), w)
+		Expect(log.GetContext(ctx)).To(Equal(w))
 	})
 
 	It("gets the entry", func() {
 		ctx := context.Background()
 		e := log.GetContext(ctx)
-		Expect(e.Exit).NotTo(BeNil())
+		Expect(e).NotTo(BeNil())
 	})
 
 	Describe("LogEntryCtxKey", func() {
 		It("formats as string", func() {
-			Expect(log.EntryCtxKey.String()).To(Equal("log: context value entry"))
+			Expect(log.WriterCtxKey.String()).To(Equal("log: context value writer"))
 		})
 	})
 })
