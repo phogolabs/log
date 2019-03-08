@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"sort"
 	"time"
 )
 
@@ -253,4 +254,30 @@ func (m M) Fields() []Field {
 	}
 
 	return fields
+}
+
+// FieldSorter sorts a slice of Fields to be sorted.
+type FieldSorter struct {
+	Fields []Field
+}
+
+// Len is part of sort.Interface.
+func (s *FieldSorter) Len() int {
+	return len(s.Fields)
+}
+
+// Swap is part of sort.Interface.
+func (s *FieldSorter) Swap(i, j int) {
+	s.Fields[i], s.Fields[j] = s.Fields[j], s.Fields[i]
+}
+
+// Less is part of sort.Interface.
+func (s *FieldSorter) Less(i, j int) bool {
+	return s.Fields[i].Key < s.Fields[j].Key
+}
+
+// SortFields sorts the fields
+func SortFields(fields []Field) {
+	sorter := &FieldSorter{Fields: fields}
+	sort.Sort(sorter)
 }

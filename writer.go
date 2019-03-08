@@ -166,6 +166,8 @@ func (e writer) Errorf(s string, v ...interface{}) {
 func (e writer) handle() {
 	e.entry.Timestamp = time.Now()
 
+	SortFields(e.entry.Fields)
+
 	if e.handler != nil {
 		e.handler.Handle(&e.entry)
 	}
