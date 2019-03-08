@@ -23,16 +23,10 @@ var _ = Describe("Error", func() {
 			fields := log.FieldsOfError(chain)
 			Expect(fields).To(HaveLen(4))
 
-			Expect(fields[0].Key).To(Equal("source"))
-
-			Expect(fields[1].Key).To(Equal("error"))
-			Expect(fields[1].Value).To(Equal("ginkgo: oh no!"))
-
-			Expect(fields[2].Key).To(Equal("code"))
-			Expect(fields[2].Value).To(Equal(1))
-
-			Expect(fields[3].Key).To(Equal("types"))
-			Expect(fields[3].Value).To(Equal("permanent"))
+			Expect(fields).To(HaveKey("source"))
+			Expect(fields).To(HaveKeyWithValue("error", "ginkgo: oh no!"))
+			Expect(fields).To(HaveKeyWithValue("code", 1))
+			Expect(fields).To(HaveKeyWithValue("types", "permanent"))
 		})
 	})
 
@@ -43,10 +37,8 @@ var _ = Describe("Error", func() {
 			fields := log.FieldsOfError(chain)
 			Expect(fields).To(HaveLen(2))
 
-			Expect(fields[0].Key).To(Equal("error"))
-			Expect(fields[0].Value).To(Equal("ginkgo: oh no!"))
-
-			Expect(fields[1].Key).To(Equal("source"))
+			Expect(fields).To(HaveKey("source"))
+			Expect(fields).To(HaveKeyWithValue("error", "ginkgo: oh no!"))
 		})
 	})
 })

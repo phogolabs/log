@@ -15,12 +15,12 @@ type ErrorCauser interface {
 }
 
 // FieldsOfError returns the fields for given error
-func FieldsOfError(err error) []Field {
-	fields := []Field{}
+func FieldsOfError(err error) Fields {
+	fields := Fields{}
 
 	if cerr, ok := err.(ErrorCauser); ok {
-		fields = append(fields, F("error", cerr.Cause().Error()))
-		fields = append(fields, F("source", cerr.StackTrace()))
+		fields["error"] = cerr.Cause().Error()
+		fields["source"] = cerr.StackTrace()
 		return fields
 	}
 
@@ -32,13 +32,12 @@ func FieldsOfError(err error) []Field {
 	var (
 		msg   string
 		types = make([]string, 0, len(chain))
-		tags  = make([]Field, 0, len(chain))
 	)
 
 	for index, e := range chain {
 		if index == 0 {
 			msg = e.Err.Error()
-			fields = append(fields, F("source", e.Source))
+			fields["source"] = e.Source
 		}
 
 		if e.Prefix != "" {
@@ -46,17 +45,16 @@ func FieldsOfError(err error) []Field {
 		}
 
 		for _, tag := range e.Tags {
-			tags = append(tags, F(tag.Key, tag.Value))
+			fields[tag.Key] = tag.Value
 		}
 
 		types = append(types, e.Types...)
 	}
 
-	fields = append(fields, F("error", msg))
-	fields = append(fields, tags...)
+	fields["error"] = msg
 
 	if len(types) > 0 {
-		fields = append(fields, F("types", strings.Join(types, ",")))
+		fields["types"] = strings.Join(types, ",")
 	}
 
 	return fields

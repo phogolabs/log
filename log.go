@@ -19,10 +19,7 @@ type Writer interface {
 	WithField(key string, value interface{}) Writer
 
 	// WithFields returns a new log entry with the supplied fields appended
-	WithFields(fields ...Field) Writer
-
-	// WithFieldMap returns a new log entry with the supplied fields appended
-	WithFieldMap(m map[string]interface{}) Writer
+	WithFields(fields ...Fielder) Writer
 
 	// WithError add a minimal stack trace to the log Entry
 	WithError(err error) Writer
@@ -106,13 +103,14 @@ func SetHandler(handler Handler) {
 }
 
 // SetDefaultFields sets the default fields
-func SetDefaultFields(field ...Field) {
-	std.entry.Fields = field
-}
+func SetDefaultFields(fields ...Fielder) {
+	defaultF := []Field{}
 
-// SetDefaultFieldsWithMap sets the default fields
-func SetDefaultFieldsWithMap(m map[string]interface{}) {
-	std.entry.Fields = M(m).Fields()
+	for _, kv := range fields {
+		defaultF = append(defaultF, kv.Fields()...)
+	}
+
+	std.entry.Fields = defaultF
 }
 
 // WithField returns a new log entry with the supplied field.
@@ -121,13 +119,8 @@ func WithField(key string, value interface{}) Writer {
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func WithFields(fields ...Field) Writer {
+func WithFields(fields ...Fielder) Writer {
 	return std.WithFields(fields...)
-}
-
-// WithFieldMap returns a new log entry with the supplied fields appended
-func WithFieldMap(m map[string]interface{}) Writer {
-	return std.WithFieldMap(m)
 }
 
 // WithError add a minimal stack trace to the log Entry
@@ -218,10 +211,26 @@ func Errorf(s string, v ...interface{}) {
 // ExitFunc is a function called on Panic or Fatal level
 type ExitFunc func(code int)
 
+// Fielder returns the fields
+type Fielder interface {
+	// Fields returns the fields
+	Fields() []Field
+}
+
+// Fields map
+type Fields = M
+
+var _ Fielder = Field{}
+
 // Field is a single Field key and value
 type Field struct {
 	Key   string      `json:"key"`
 	Value interface{} `json:"value"`
+}
+
+// Fields returns the fields
+func (f Field) Fields() []Field {
+	return []Field{f}
 }
 
 // F creates a new Field using the supplied key + value.
@@ -229,6 +238,8 @@ type Field struct {
 func F(key string, value interface{}) Field {
 	return Field{Key: key, Value: value}
 }
+
+var _ Fielder = M{}
 
 // M is a map
 type M map[string]interface{}

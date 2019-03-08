@@ -102,17 +102,18 @@ var _ = Describe("Writer", func() {
 			Expect(e.Entry().Fields).To(HaveLen(1))
 			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
 		})
-	})
 
-	Describe("WithFieldMap", func() {
-		It("returns a new entry", func() {
-			fields := map[string]interface{}{
-				"app": "service-api",
-			}
-			e := writer.WithFieldMap(fields).(log.Writer)
-			Expect(e).NotTo(Equal(entry))
-			Expect(e.Entry().Fields).To(HaveLen(1))
-			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
+		Context("when is a map", func() {
+			It("returns a new entry", func() {
+				fields := log.M{
+					"app": "service-api",
+				}
+
+				e := writer.WithFields(fields).(log.Writer)
+				Expect(e).NotTo(Equal(entry))
+				Expect(e.Entry().Fields).To(HaveLen(1))
+				Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
+			})
 		})
 	})
 

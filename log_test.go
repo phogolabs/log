@@ -39,7 +39,7 @@ var _ = Describe("Log", func() {
 
 	Describe("SetDefaultFieldsWithMap", func() {
 		It("sets the default fields", func() {
-			log.SetDefaultFieldsWithMap(log.M{"app": "ginkgo"})
+			log.SetDefaultFields(log.M{"app": "ginkgo"})
 
 			e := log.WithField("version", "beta").(log.Writer)
 
@@ -72,17 +72,17 @@ var _ = Describe("Log", func() {
 			Expect(e.Entry().Fields).To(HaveLen(1))
 			Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
 		})
-	})
 
-	Describe("WithFieldMap", func() {
-		It("returns a new entry", func() {
-			fields := map[string]interface{}{
-				"address": "service-api",
-			}
+		Context("when is a map", func() {
+			It("returns a new entry", func() {
+				fields := log.M{
+					"address": "service-api",
+				}
 
-			e := log.WithFieldMap(fields).(log.Writer)
-			Expect(e.Entry().Fields).To(HaveLen(1))
-			Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
+				e := log.WithFields(fields).(log.Writer)
+				Expect(e.Entry().Fields).To(HaveLen(1))
+				Expect(e.Entry().Fields).To(ContainElement(log.F("address", "service-api")))
+			})
 		})
 	})
 

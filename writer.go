@@ -39,20 +39,16 @@ func (e writer) WithField(key string, value interface{}) Writer {
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func (e writer) WithFields(fields ...Field) Writer {
-	e.entry.Fields = append(e.entry.Fields, fields...)
-	return e
-}
-
-// WithFieldMap returns a new log entry with the supplied fields appended
-func (e writer) WithFieldMap(m map[string]interface{}) Writer {
-	e.entry.Fields = append(e.entry.Fields, M(m).Fields()...)
+func (e writer) WithFields(fields ...Fielder) Writer {
+	for _, kv := range fields {
+		e.entry.Fields = append(e.entry.Fields, kv.Fields()...)
+	}
 	return e
 }
 
 // WithError add a minimal stack trace to the log writer
 func (e writer) WithError(err error) Writer {
-	return e.WithFields(FieldsOfError(err)...)
+	return e.WithFields(FieldsOfError(err))
 }
 
 // Debug logs a debug entry
