@@ -40,9 +40,7 @@ func (e writer) WithField(key string, value interface{}) Writer {
 
 // WithFields returns a new log entry with the supplied fields appended
 func (e writer) WithFields(fields ...Fielder) Writer {
-	for _, kv := range fields {
-		e.entry.Fields = append(e.entry.Fields, kv.Fields()...)
-	}
+	e.entry.Fields = fields
 	return e
 }
 
@@ -165,8 +163,6 @@ func (e writer) Errorf(s string, v ...interface{}) {
 
 func (e writer) handle() {
 	e.entry.Timestamp = time.Now()
-
-	SortFields(e.entry.Fields)
 
 	if e.handler != nil {
 		e.handler.Handle(&e.entry)

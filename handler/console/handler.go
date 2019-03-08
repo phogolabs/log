@@ -125,48 +125,50 @@ func (c *Handler) Handle(e *log.Entry) {
 	line = append(line, space)
 	line = append(line, e.Message...)
 
-	for _, f := range e.Fields {
-		line = append(line, space)
+	for _, fielder := range e.Fields {
+		for _, f := range fielder.Fields() {
+			line = append(line, space)
 
-		if len(color) > 0 {
-			line = append(line, color...)
-		}
+			if len(color) > 0 {
+				line = append(line, color...)
+			}
 
-		line = append(line, f.Key...)
-		line = append(line, ansi.Reset...)
-		line = append(line, equals)
+			line = append(line, f.Key...)
+			line = append(line, ansi.Reset...)
+			line = append(line, equals)
 
-		switch t := f.Value.(type) {
-		case string:
-			line = append(line, t...)
-		case int:
-			line = strconv.AppendInt(line, int64(t), base10)
-		case int8:
-			line = strconv.AppendInt(line, int64(t), base10)
-		case int16:
-			line = strconv.AppendInt(line, int64(t), base10)
-		case int32:
-			line = strconv.AppendInt(line, int64(t), base10)
-		case int64:
-			line = strconv.AppendInt(line, t, base10)
-		case uint:
-			line = strconv.AppendUint(line, uint64(t), base10)
-		case uint8:
-			line = strconv.AppendUint(line, uint64(t), base10)
-		case uint16:
-			line = strconv.AppendUint(line, uint64(t), base10)
-		case uint32:
-			line = strconv.AppendUint(line, uint64(t), base10)
-		case uint64:
-			line = strconv.AppendUint(line, t, base10)
-		case float32:
-			line = strconv.AppendFloat(line, float64(t), 'f', -1, 32)
-		case float64:
-			line = strconv.AppendFloat(line, t, 'f', -1, 64)
-		case bool:
-			line = strconv.AppendBool(line, t)
-		default:
-			line = append(line, fmt.Sprintf(v, f.Value)...)
+			switch t := f.Value.(type) {
+			case string:
+				line = append(line, t...)
+			case int:
+				line = strconv.AppendInt(line, int64(t), base10)
+			case int8:
+				line = strconv.AppendInt(line, int64(t), base10)
+			case int16:
+				line = strconv.AppendInt(line, int64(t), base10)
+			case int32:
+				line = strconv.AppendInt(line, int64(t), base10)
+			case int64:
+				line = strconv.AppendInt(line, t, base10)
+			case uint:
+				line = strconv.AppendUint(line, uint64(t), base10)
+			case uint8:
+				line = strconv.AppendUint(line, uint64(t), base10)
+			case uint16:
+				line = strconv.AppendUint(line, uint64(t), base10)
+			case uint32:
+				line = strconv.AppendUint(line, uint64(t), base10)
+			case uint64:
+				line = strconv.AppendUint(line, t, base10)
+			case float32:
+				line = strconv.AppendFloat(line, float64(t), 'f', -1, 32)
+			case float64:
+				line = strconv.AppendFloat(line, t, 'f', -1, 64)
+			case bool:
+				line = strconv.AppendBool(line, t)
+			default:
+				line = append(line, fmt.Sprintf(v, f.Value)...)
+			}
 		}
 	}
 

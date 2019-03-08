@@ -1,6 +1,7 @@
 package log
 
 import (
+	"encoding/json"
 	"os"
 	"sort"
 	"time"
@@ -10,7 +11,7 @@ import (
 type Entry struct {
 	Message   string    `json:"message"`
 	Timestamp time.Time `json:"timestamp"`
-	Fields    []Field   `json:"fields,omitempty"`
+	Fields    []Fielder `json:"fields,omitempty"`
 	Level     Level     `json:"level"`
 }
 
@@ -105,13 +106,7 @@ func SetHandler(handler Handler) {
 
 // SetDefaultFields sets the default fields
 func SetDefaultFields(fields ...Fielder) {
-	defaultF := []Field{}
-
-	for _, kv := range fields {
-		defaultF = append(defaultF, kv.Fields()...)
-	}
-
-	std.entry.Fields = defaultF
+	std.entry.Fields = fields
 }
 
 // WithField returns a new log entry with the supplied field.
@@ -225,13 +220,22 @@ var _ Fielder = Field{}
 
 // Field is a single Field key and value
 type Field struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
+	Key   string
+	Value interface{}
 }
 
 // Fields returns the fields
 func (f Field) Fields() []Field {
 	return []Field{f}
+}
+
+// MarshalJSON marshals the field
+func (f Field) MarshalJSON() ([]byte, error) {
+	m := map[string]interface{}{
+		f.Key: f.Value,
+	}
+
+	return json.Marshal(&m)
 }
 
 // F creates a new Field using the supplied key + value.

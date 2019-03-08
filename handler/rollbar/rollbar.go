@@ -60,8 +60,10 @@ func (h *Handler) Handle(e *log.Entry) {
 		level = rollbar.CRIT
 	}
 
-	for _, field := range e.Fields {
-		extras[field.Key] = field.Value
+	for _, fielder := range e.Fields {
+		for _, field := range fielder.Fields() {
+			extras[field.Key] = field.Value
+		}
 	}
 
 	h.Client.MessageWithExtras(level, e.Message, extras)
