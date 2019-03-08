@@ -122,10 +122,7 @@ var _ = Describe("Writer", func() {
 			err := fmt.Errorf("oh no!")
 			e := writer.WithError(err).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Entry().Fields).To(HaveLen(2))
-			Expect(e.Entry().Fields[0].Key).To(Equal("source"))
-			Expect(e.Entry().Fields[1].Key).To(Equal("error"))
-			Expect(e.Entry().Fields[1].Value).To(Equal("oh no!"))
+			Expect(e.Entry().Fields).To(ContainElement(log.F("error", "oh no!")))
 		})
 	})
 
