@@ -28,7 +28,7 @@ var _ = Describe("Handler", func() {
 			Message:   "hello",
 			Timestamp: time.Now(),
 			Level:     log.InfoLevel,
-			Fields: []log.Field{
+			Fields: []log.Fielder{
 				log.F("app", "ginkgo"),
 			},
 		}

@@ -38,7 +38,7 @@ var _ = Describe("Rollbar", func() {
 			Message:   "hello",
 			Timestamp: time.Now(),
 			Level:     llevel,
-			Fields: []log.Field{
+			Fields: []log.Fielder{
 				log.F("app", "ginkgo"),
 			},
 		}
