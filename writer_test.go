@@ -90,8 +90,20 @@ var _ = Describe("Writer", func() {
 		It("returns a new entry", func() {
 			e := writer.WithField("app", "service-api").(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Entry().Fields).To(HaveLen(1))
-			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
+			Expect(e.Fields()).To(HaveLen(1))
+			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
+		})
+
+		It("does not cherry pick fields", func() {
+			e := writer.WithField("app", "service-api").(log.Writer)
+			Expect(e).NotTo(Equal(entry))
+			Expect(e.Fields()).To(HaveLen(1))
+			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
+
+			e2 := writer.WithField("my_app", "another-api").(log.Writer)
+			Expect(e2).NotTo(Equal(entry))
+			Expect(e2.Fields()).To(HaveLen(1))
+			Expect(e2.Fields()).To(HaveKeyWithValue("my_app", "another-api"))
 		})
 	})
 
@@ -99,20 +111,19 @@ var _ = Describe("Writer", func() {
 		It("returns a new entry", func() {
 			e := writer.WithFields(log.F("app", "service-api")).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Entry().Fields).To(HaveLen(1))
-			Expect(e.Entry().Fields).To(ContainElement(log.F("app", "service-api")))
+			Expect(e.Fields()).To(HaveLen(1))
+			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
 		})
 
 		Context("when is a map", func() {
 			It("returns a new entry", func() {
-				fields := log.M{
+				fields := log.FieldMap{
 					"app": "service-api",
 				}
 
 				e := writer.WithFields(fields).(log.Writer)
 				Expect(e).NotTo(Equal(entry))
-				Expect(e.Entry().Fields).To(HaveLen(1))
-				Expect(e.Entry().Fields[0]).To(HaveKeyWithValue("app", "service-api"))
+				Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
 			})
 		})
 	})
@@ -122,7 +133,7 @@ var _ = Describe("Writer", func() {
 			err := fmt.Errorf("oh no!")
 			e := writer.WithError(err).(log.Writer)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Entry().Fields[0]).To(HaveKeyWithValue("error", "oh no!"))
+			Expect(e.Fields()).To(HaveKeyWithValue("error", "oh no!"))
 		})
 	})
 

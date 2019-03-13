@@ -1,7 +1,6 @@
 package log
 
 import (
-	"encoding/json"
 	"os"
 	"sort"
 	"time"
@@ -11,7 +10,7 @@ import (
 type Entry struct {
 	Message   string    `json:"message"`
 	Timestamp time.Time `json:"timestamp"`
-	Fields    []Fielder `json:"fields,omitempty"`
+	Fields    FieldMap  `json:"fields,omitempty"`
 	Level     Level     `json:"level"`
 }
 
@@ -74,13 +73,14 @@ type Writer interface {
 	// Errorf logs an error log entry with formatting
 	Errorf(s string, v ...interface{})
 
-	// Entry returns the entry
-	Entry() Entry
+	// Fields returns the fields
+	Fields() FieldMap
 }
 
 // standard logger
-var std = writer{
-	exit: os.Exit,
+var std = &writer{
+	exit:   os.Exit,
+	fields: FieldMap{},
 	handler: &LevelHandler{
 		Level:   DebugLevel,
 		Handler: &DefaultHandler{},
@@ -105,8 +105,14 @@ func SetHandler(handler Handler) {
 }
 
 // SetDefaultFields sets the default fields
-func SetDefaultFields(fields ...Fielder) {
-	std.entry.Fields = fields
+func SetDefaultFields(entries ...Fielder) {
+	std.fields = FieldMap{}
+
+	for _, entry := range entries {
+		for key, value := range entry.Fields() {
+			std.fields[key] = value
+		}
+	}
 }
 
 // WithField returns a new log entry with the supplied field.
@@ -210,11 +216,8 @@ type ExitFunc func(code int)
 // Fielder returns the fields
 type Fielder interface {
 	// Fields returns the fields
-	Fields() []Field
+	Fields() map[string]interface{}
 }
-
-// Fields map
-type Fields = M
 
 var _ Fielder = Field{}
 
@@ -225,17 +228,10 @@ type Field struct {
 }
 
 // Fields returns the fields
-func (f Field) Fields() []Field {
-	return []Field{f}
-}
-
-// MarshalJSON marshals the field
-func (f Field) MarshalJSON() ([]byte, error) {
-	m := map[string]interface{}{
+func (f Field) Fields() map[string]interface{} {
+	return map[string]interface{}{
 		f.Key: f.Value,
 	}
-
-	return json.Marshal(&m)
 }
 
 // F creates a new Field using the supplied key + value.
@@ -244,17 +240,21 @@ func F(key string, value interface{}) Field {
 	return Field{Key: key, Value: value}
 }
 
-var _ Fielder = M{}
+var _ Fielder = FieldMap{}
 
-// M is a map
-type M map[string]interface{}
+// FieldMap is a map
+type FieldMap map[string]interface{}
 
 // Fields return the map as slice of fields
-func (m M) Fields() []Field {
-	fields := []Field{}
+func (m FieldMap) Fields() map[string]interface{} {
+	return m
+}
+
+func (m FieldMap) copy() FieldMap {
+	fields := FieldMap{}
 
 	for key, value := range m {
-		fields = append(fields, F(key, value))
+		fields[key] = value
 	}
 
 	return fields

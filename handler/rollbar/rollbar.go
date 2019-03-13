@@ -42,10 +42,7 @@ func New(config *Config) *Handler {
 
 // Handle handles the log entry
 func (h *Handler) Handle(e *log.Entry) {
-	var (
-		level  string
-		extras = make(map[string]interface{}, len(e.Fields))
-	)
+	var level string
 
 	switch e.Level {
 	case log.DebugLevel:
@@ -60,11 +57,5 @@ func (h *Handler) Handle(e *log.Entry) {
 		level = rollbar.CRIT
 	}
 
-	for _, fielder := range e.Fields {
-		for _, field := range fielder.Fields() {
-			extras[field.Key] = field.Value
-		}
-	}
-
-	h.Client.MessageWithExtras(level, e.Message, extras)
+	h.Client.MessageWithExtras(level, e.Message, e.Fields)
 }
