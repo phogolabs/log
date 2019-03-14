@@ -52,3 +52,14 @@ func (h *Handler) Handle(e *log.Entry) {
 
 	h.encoder.Encode(e)
 }
+
+// SetPretty enables pretty output
+func (h *Handler) SetPretty(value bool) {
+	indent := ""
+
+	if value {
+		indent = "\t"
+	}
+
+	h.encoder.SetIndent("", indent)
+}

@@ -23,20 +23,33 @@ var _ = Describe("Handler", func() {
 		handler = json.New(buffer)
 	})
 
-	It("encodes the entry as json", func() {
-		entry := &log.Entry{
-			Message:   "hello",
-			Timestamp: time.Now(),
-			Level:     log.InfoLevel,
-			Fields: log.FieldMap{
-				"app": "ginkgo",
-			},
-		}
+	ItEncodesTheEntry := func() {
+		It("encodes the entry as json", func() {
+			entry := &log.Entry{
+				Message:   "hello",
+				Timestamp: time.Now(),
+				Level:     log.InfoLevel,
+				Fields: log.FieldMap{
+					"app": "ginkgo",
+				},
+			}
 
-		handler.Handle(entry)
+			handler.Handle(entry)
 
-		m := unmarshal(buffer)
-		Expect(m).To(HaveKeyWithValue("message", "hello"))
-		Expect(m).To(HaveKeyWithValue("level", "INFO"))
+			m := unmarshal(buffer)
+			Expect(m).To(HaveKeyWithValue("message", "hello"))
+			Expect(m).To(HaveKeyWithValue("level", "INFO"))
+		})
+	}
+
+	ItEncodesTheEntry()
+
+	Context("when the pretty is on", func() {
+		BeforeEach(func() {
+			handler.SetPretty(true)
+		})
+
+		ItEncodesTheEntry()
 	})
+
 })
