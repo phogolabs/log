@@ -58,7 +58,7 @@ func (h *Handler) SetPretty(value bool) {
 	indent := ""
 
 	if value {
-		indent = "\t"
+		indent = "  "
 	}
 
 	h.encoder.SetIndent("", indent)
