@@ -23,10 +23,12 @@ package json
 // SOFTWARE.
 
 import (
-	"encoding/json"
+	"fmt"
 	"io"
+	"strings"
 	"sync"
 
+	"github.com/fatih/color"
 	"github.com/phogolabs/log"
 )
 
@@ -34,14 +36,19 @@ var _ log.Handler = &Handler{}
 
 // Handler implementation.
 type Handler struct {
-	encoder *json.Encoder
-	m       sync.Mutex
+	formatter *Formatter
+	writer    io.Writer
+	m         sync.Mutex
 }
 
 // New handler.
-func New(w io.Writer) *Handler {
+func New(writer io.Writer) *Handler {
+	formatter := NewFormatter()
+	formatter.ColorFn = colorify
+
 	return &Handler{
-		encoder: json.NewEncoder(w),
+		writer:    writer,
+		formatter: formatter,
 	}
 }
 
@@ -50,16 +57,51 @@ func (h *Handler) Handle(e *log.Entry) {
 	h.m.Lock()
 	defer h.m.Unlock()
 
-	h.encoder.Encode(e)
+	if data, err := h.formatter.Marshal(e); err == nil {
+		h.writer.Write(data)
+	}
 }
 
 // SetPretty enables pretty output
 func (h *Handler) SetPretty(value bool) {
-	indent := ""
+	h.formatter.DisablePretty = !value
+}
 
-	if value {
-		indent = "  "
+// SetColor enables color formatting
+func (h *Handler) SetColor(value bool) {
+	h.formatter.DisabledColor = !value
+}
+
+func colorify(k, v interface{}) ColorFormatter {
+	toString := func(n interface{}) string {
+		return strings.ToUpper(fmt.Sprintf("%v", n))
 	}
 
-	h.encoder.SetIndent("", indent)
+	if name := toString(k); name != "LEVEL" {
+		return nil
+	}
+
+	if level, err := log.ParseLevel(toString(v)); err == nil {
+		switch level {
+		case log.DebugLevel:
+			return color.New(color.Reset)
+		case log.InfoLevel:
+			return color.New(color.FgWhite, color.Bold)
+		case log.NoticeLevel:
+			return color.New(color.FgHiWhite, color.Bold)
+		case log.WarnLevel:
+			return color.New(color.FgHiYellow, color.Bold)
+		case log.ErrorLevel:
+			return color.New(color.FgHiRed, color.Bold)
+		case log.PanicLevel:
+			return color.New(color.FgHiRed, color.Bold)
+		case log.AlertLevel:
+			return color.New(color.FgHiRed, color.Bold)
+		case log.FatalLevel:
+			return color.New(color.FgHiRed, color.Bold)
+		}
+
+	}
+
+	return nil
 }

@@ -4,11 +4,14 @@ require (
 	github.com/apex/log v1.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.17.13
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fatih/color v1.7.0
 	github.com/go-playground/ansi v2.1.0+incompatible
 	github.com/go-playground/errors v3.3.0+incompatible
 	github.com/golang/protobuf v1.3.0 // indirect
 	github.com/jpillora/backoff v0.0.0-20180909062703-3050d21c67d7 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
+	github.com/mattn/go-colorable v0.1.1 // indirect
+	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.4.3
 	github.com/pkg/errors v0.8.1

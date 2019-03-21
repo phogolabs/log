@@ -21,6 +21,8 @@ var _ = Describe("Handler", func() {
 	BeforeEach(func() {
 		buffer = &bytes.Buffer{}
 		handler = json.New(buffer)
+		handler.SetColor(false)
+		handler.SetPretty(false)
 	})
 
 	ItEncodesTheEntry := func() {
