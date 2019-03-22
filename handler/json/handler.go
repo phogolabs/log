@@ -58,8 +58,7 @@ func (h *Handler) Handle(e *log.Entry) {
 	defer h.m.Unlock()
 
 	if data, err := h.formatter.Marshal(e); err == nil {
-		h.writer.Write(data)
-		fmt.Fprintln(h.writer)
+		fmt.Fprintln(h.writer, string(data))
 	}
 }
 
