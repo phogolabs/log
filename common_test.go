@@ -18,18 +18,18 @@ var _ = Describe("Log", func() {
 
 		log.SetLevel(log.DebugLevel)
 		log.SetHandler(handler)
-		log.SetExitFn(func(code int) {
+		log.SetExitFunc(func(code int) {
 			Expect(code).To(Equal(1))
 		})
 
-		log.SetDefaultFields()
+		log.SetDefaultFields(log.FieldMap{})
 	})
 
 	Describe("SetDefaultFields", func() {
 		It("sets the default fields", func() {
-			log.SetDefaultFields(log.F("app", "ginkgo"))
+			log.SetDefaultFields(log.FieldMap{"app": "ginkgo"})
 
-			e := log.WithField("version", "beta").(log.Writer)
+			e := log.WithField("version", "beta").(log.Logger)
 
 			Expect(e.Fields()).To(HaveLen(2))
 			Expect(e.Fields()).To(HaveKeyWithValue("app", "ginkgo"))
@@ -41,7 +41,7 @@ var _ = Describe("Log", func() {
 		It("sets the default fields", func() {
 			log.SetDefaultFields(log.FieldMap{"app": "ginkgo"})
 
-			e := log.WithField("version", "beta").(log.Writer)
+			e := log.WithField("version", "beta").(log.Logger)
 
 			Expect(e.Fields()).To(HaveLen(2))
 			Expect(e.Fields()).To(HaveKeyWithValue("app", "ginkgo"))
@@ -60,7 +60,7 @@ var _ = Describe("Log", func() {
 
 	Describe("WithField", func() {
 		It("returns a new entry", func() {
-			e := log.WithField("address", "service-api").(log.Writer)
+			e := log.WithField("address", "service-api").(log.Logger)
 			Expect(e.Fields()).To(HaveLen(1))
 			Expect(e.Fields()).To(HaveKeyWithValue("address", "service-api"))
 		})
@@ -68,7 +68,7 @@ var _ = Describe("Log", func() {
 
 	Describe("WithFields", func() {
 		It("returns a new entry", func() {
-			e := log.WithFields(log.F("address", "service-api")).(log.Writer)
+			e := log.WithField("address", "service-api").(log.Logger)
 			Expect(e.Fields()).To(HaveLen(1))
 			Expect(e.Fields()).To(HaveKeyWithValue("address", "service-api"))
 		})
@@ -79,7 +79,7 @@ var _ = Describe("Log", func() {
 					"address": "service-api",
 				}
 
-				e := log.WithFields(fields).(log.Writer)
+				e := log.WithFields(fields).(log.Logger)
 				Expect(e.Fields()).To(HaveLen(1))
 				Expect(e.Fields()).To(HaveKeyWithValue("address", "service-api"))
 			})
@@ -90,7 +90,7 @@ var _ = Describe("Log", func() {
 		It("returns a new entry", func() {
 			err := fmt.Errorf("oh no!")
 
-			e := log.WithError(err).(log.Writer)
+			e := log.WithError(err).(log.Logger)
 			Expect(e.Fields()).To(HaveLen(2))
 
 			fields := e.Fields()

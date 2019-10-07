@@ -11,7 +11,7 @@ import (
 
 var _ = Describe("Context", func() {
 	It("sets the entry", func() {
-		w := log.NewWriter(&log.WriterConfig{})
+		w := log.New(&log.Config{})
 
 		ctx := log.SetContext(context.Background(), w)
 		Expect(log.GetContext(ctx)).To(Equal(w))
@@ -25,7 +25,7 @@ var _ = Describe("Context", func() {
 
 	Describe("LogEntryCtxKey", func() {
 		It("formats as string", func() {
-			Expect(log.WriterCtxKey.String()).To(Equal("log: context value writer"))
+			Expect(log.LoggerCtxKey.String()).To(Equal("log: context value logger"))
 		})
 	})
 })

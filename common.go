@@ -2,9 +2,40 @@ package log
 
 import (
 	"os"
-	"sort"
 	"time"
 )
+
+// standard logger
+var std = &logger{
+	exit:   os.Exit,
+	fields: FieldMap{},
+	handler: &LevelHandler{
+		Level:   DebugLevel,
+		Handler: &DefaultHandler{},
+	},
+}
+
+// ExitFunc is a function called on Panic or Fatal level
+type ExitFunc func(code int)
+
+// FieldMap is a map
+type FieldMap map[string]interface{}
+
+func (m FieldMap) copy() FieldMap {
+	fields := FieldMap{}
+
+	for key, value := range m {
+		fields[key] = value
+	}
+
+	return fields
+}
+
+// Config is logger's configuration
+type Config struct {
+	Handler Handler
+	Exit    ExitFunc
+}
 
 // Entry defines a single log entry
 type Entry struct {
@@ -14,16 +45,16 @@ type Entry struct {
 	Level     Level     `json:"level"`
 }
 
-// Writer of the log
-type Writer interface {
+// Logger of the log
+type Logger interface {
 	// WithField returns a new log entry with the supplied field.
-	WithField(key string, value interface{}) Writer
+	WithField(key string, value interface{}) Logger
 
 	// WithFields returns a new log entry with the supplied fields appended
-	WithFields(fields ...Fielder) Writer
+	WithFields(fields FieldMap) Logger
 
 	// WithError add a minimal stack trace to the log Entry
-	WithError(err error) Writer
+	WithError(err error) Logger
 
 	// Debug logs a debug entry
 	Debug(v ...interface{})
@@ -77,18 +108,8 @@ type Writer interface {
 	Fields() FieldMap
 }
 
-// standard logger
-var std = &writer{
-	exit:   os.Exit,
-	fields: FieldMap{},
-	handler: &LevelHandler{
-		Level:   DebugLevel,
-		Handler: &DefaultHandler{},
-	},
-}
-
-// SetExitFn sets the exit function. default: os.Exit
-func SetExitFn(fn ExitFunc) {
+// SetExitFunc sets the exit function. default: os.Exit
+func SetExitFunc(fn ExitFunc) {
 	std.exit = fn
 }
 
@@ -105,28 +126,22 @@ func SetHandler(handler Handler) {
 }
 
 // SetDefaultFields sets the default fields
-func SetDefaultFields(entries ...Fielder) {
-	std.fields = FieldMap{}
-
-	for _, entry := range entries {
-		for key, value := range entry.Fields() {
-			std.fields[key] = value
-		}
-	}
+func SetDefaultFields(fields FieldMap) {
+	std.fields = fields
 }
 
 // WithField returns a new log entry with the supplied field.
-func WithField(key string, value interface{}) Writer {
+func WithField(key string, value interface{}) Logger {
 	return std.WithField(key, value)
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func WithFields(fields ...Fielder) Writer {
-	return std.WithFields(fields...)
+func WithFields(fields FieldMap) Logger {
+	return std.WithFields(fields)
 }
 
 // WithError add a minimal stack trace to the log Entry
-func WithError(err error) Writer {
+func WithError(err error) Logger {
 	return std.WithError(err)
 }
 
@@ -208,80 +223,4 @@ func Error(v ...interface{}) {
 // Errorf logs an error log entry with formatting
 func Errorf(s string, v ...interface{}) {
 	std.Errorf(s, v...)
-}
-
-// ExitFunc is a function called on Panic or Fatal level
-type ExitFunc func(code int)
-
-// Fielder returns the fields
-type Fielder interface {
-	// Fields returns the fields
-	Fields() map[string]interface{}
-}
-
-var _ Fielder = Field{}
-
-// Field is a single Field key and value
-type Field struct {
-	Key   string
-	Value interface{}
-}
-
-// Fields returns the fields
-func (f Field) Fields() map[string]interface{} {
-	return map[string]interface{}{
-		f.Key: f.Value,
-	}
-}
-
-// F creates a new Field using the supplied key + value.
-// it is shorthand for defining field manually
-func F(key string, value interface{}) Field {
-	return Field{Key: key, Value: value}
-}
-
-var _ Fielder = FieldMap{}
-
-// FieldMap is a map
-type FieldMap map[string]interface{}
-
-// Fields return the map as slice of fields
-func (m FieldMap) Fields() map[string]interface{} {
-	return m
-}
-
-func (m FieldMap) copy() FieldMap {
-	fields := FieldMap{}
-
-	for key, value := range m {
-		fields[key] = value
-	}
-
-	return fields
-}
-
-// FieldSorter sorts a slice of Fields to be sorted.
-type FieldSorter struct {
-	Fields []Field
-}
-
-// Len is part of sort.Interface.
-func (s *FieldSorter) Len() int {
-	return len(s.Fields)
-}
-
-// Swap is part of sort.Interface.
-func (s *FieldSorter) Swap(i, j int) {
-	s.Fields[i], s.Fields[j] = s.Fields[j], s.Fields[i]
-}
-
-// Less is part of sort.Interface.
-func (s *FieldSorter) Less(i, j int) bool {
-	return s.Fields[i].Key < s.Fields[j].Key
-}
-
-// SortFields sorts the fields
-func SortFields(fields []Field) {
-	sorter := &FieldSorter{Fields: fields}
-	sort.Sort(sorter)
 }

@@ -66,41 +66,41 @@ var _ = Describe("LevelHandler", func() {
 	})
 })
 
-var _ = Describe("Writer", func() {
+var _ = Describe("Logger", func() {
 	var (
 		entry   log.Entry
-		writer  log.Writer
+		writer  log.Logger
 		handler *fake.Handler
 	)
 
 	BeforeEach(func() {
 		handler = &fake.Handler{}
 
-		config := log.WriterConfig{
+		config := log.Config{
 			Handler: handler,
 			Exit: func(code int) {
 				Expect(code).To(Equal(1))
 			},
 		}
 
-		writer = log.NewWriter(&config)
+		writer = log.New(&config)
 	})
 
 	Describe("WithField", func() {
 		It("returns a new entry", func() {
-			e := writer.WithField("app", "service-api").(log.Writer)
+			e := writer.WithField("app", "service-api").(log.Logger)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields()).To(HaveLen(1))
 			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
 		})
 
 		It("does not cherry pick fields", func() {
-			e := writer.WithField("app", "service-api").(log.Writer)
+			e := writer.WithField("app", "service-api").(log.Logger)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields()).To(HaveLen(1))
 			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
 
-			e2 := writer.WithField("my_app", "another-api").(log.Writer)
+			e2 := writer.WithField("my_app", "another-api").(log.Logger)
 			Expect(e2).NotTo(Equal(entry))
 			Expect(e2.Fields()).To(HaveLen(1))
 			Expect(e2.Fields()).To(HaveKeyWithValue("my_app", "another-api"))
@@ -109,7 +109,7 @@ var _ = Describe("Writer", func() {
 
 	Describe("WithFields", func() {
 		It("returns a new entry", func() {
-			e := writer.WithFields(log.F("app", "service-api")).(log.Writer)
+			e := writer.WithField("app", "service-api").(log.Logger)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields()).To(HaveLen(1))
 			Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
@@ -121,7 +121,7 @@ var _ = Describe("Writer", func() {
 					"app": "service-api",
 				}
 
-				e := writer.WithFields(fields).(log.Writer)
+				e := writer.WithFields(fields).(log.Logger)
 				Expect(e).NotTo(Equal(entry))
 				Expect(e.Fields()).To(HaveKeyWithValue("app", "service-api"))
 			})
@@ -131,14 +131,14 @@ var _ = Describe("Writer", func() {
 	Describe("WithError", func() {
 		It("returns a new entry", func() {
 			err := fmt.Errorf("oh no!")
-			e := writer.WithError(err).(log.Writer)
+			e := writer.WithError(err).(log.Logger)
 			Expect(e).NotTo(Equal(entry))
 			Expect(e.Fields()).To(HaveKeyWithValue("error", "oh no!"))
 		})
 	})
 
 	DescribeOperation := func(level log.Level) {
-		op := func(e log.Writer, v ...interface{}) {
+		op := func(e log.Logger, v ...interface{}) {
 			switch level {
 			case log.DebugLevel:
 				e.Debug(v...)
@@ -159,7 +159,7 @@ var _ = Describe("Writer", func() {
 			}
 		}
 
-		opf := func(e log.Writer, msg string, v ...interface{}) {
+		opf := func(e log.Logger, msg string, v ...interface{}) {
 			switch level {
 			case log.DebugLevel:
 				e.Debugf(msg, v...)

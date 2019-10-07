@@ -15,7 +15,7 @@ type ErrorCauser interface {
 }
 
 // FieldsOfError returns the fields for given error
-func FieldsOfError(err error) Fielder {
+func FieldsOfError(err error) FieldMap {
 	fields := FieldMap{}
 
 	if cerr, ok := err.(ErrorCauser); ok {
