@@ -117,7 +117,7 @@ var _ = Describe("Logger", func() {
 
 		Context("when is a map", func() {
 			It("returns a new entry", func() {
-				fields := log.FieldMap{
+				fields := log.Map{
 					"app": "service-api",
 				}
 

@@ -8,7 +8,7 @@ import (
 // standard logger
 var std = &logger{
 	exit:   os.Exit,
-	fields: FieldMap{},
+	fields: Map{},
 	handler: &LevelHandler{
 		Level:   DebugLevel,
 		Handler: &DefaultHandler{},
@@ -18,11 +18,11 @@ var std = &logger{
 // ExitFunc is a function called on Panic or Fatal level
 type ExitFunc func(code int)
 
-// FieldMap is a map
-type FieldMap map[string]interface{}
+// Map is a map
+type Map map[string]interface{}
 
-func (m FieldMap) copy() FieldMap {
-	fields := FieldMap{}
+func (m Map) copy() Map {
+	fields := Map{}
 
 	for key, value := range m {
 		fields[key] = value
@@ -41,7 +41,7 @@ type Config struct {
 type Entry struct {
 	Message   string    `json:"message"`
 	Timestamp time.Time `json:"timestamp"`
-	Fields    FieldMap  `json:"fields,omitempty"`
+	Fields    Map       `json:"fields,omitempty"`
 	Level     Level     `json:"level"`
 }
 
@@ -51,7 +51,7 @@ type Logger interface {
 	WithField(key string, value interface{}) Logger
 
 	// WithFields returns a new log entry with the supplied fields appended
-	WithFields(fields FieldMap) Logger
+	WithFields(fields Map) Logger
 
 	// WithError add a minimal stack trace to the log Entry
 	WithError(err error) Logger
@@ -105,7 +105,7 @@ type Logger interface {
 	Errorf(s string, v ...interface{})
 
 	// Fields returns the fields
-	Fields() FieldMap
+	Fields() Map
 }
 
 // SetExitFunc sets the exit function. default: os.Exit
@@ -126,7 +126,7 @@ func SetHandler(handler Handler) {
 }
 
 // SetDefaultFields sets the default fields
-func SetDefaultFields(fields FieldMap) {
+func SetDefaultFields(fields Map) {
 	std.fields = fields
 }
 
@@ -136,7 +136,7 @@ func WithField(key string, value interface{}) Logger {
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func WithFields(fields FieldMap) Logger {
+func WithFields(fields Map) Logger {
 	return std.WithFields(fields)
 }
 

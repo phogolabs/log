@@ -22,12 +22,12 @@ var _ = Describe("Log", func() {
 			Expect(code).To(Equal(1))
 		})
 
-		log.SetDefaultFields(log.FieldMap{})
+		log.SetDefaultFields(log.Map{})
 	})
 
 	Describe("SetDefaultFields", func() {
 		It("sets the default fields", func() {
-			log.SetDefaultFields(log.FieldMap{"app": "ginkgo"})
+			log.SetDefaultFields(log.Map{"app": "ginkgo"})
 
 			e := log.WithField("version", "beta").(log.Logger)
 
@@ -39,7 +39,7 @@ var _ = Describe("Log", func() {
 
 	Describe("SetDefaultFieldsWithMap", func() {
 		It("sets the default fields", func() {
-			log.SetDefaultFields(log.FieldMap{"app": "ginkgo"})
+			log.SetDefaultFields(log.Map{"app": "ginkgo"})
 
 			e := log.WithField("version", "beta").(log.Logger)
 
@@ -75,7 +75,7 @@ var _ = Describe("Log", func() {
 
 		Context("when is a map", func() {
 			It("returns a new entry", func() {
-				fields := log.FieldMap{
+				fields := log.Map{
 					"address": "service-api",
 				}
 

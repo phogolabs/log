@@ -31,7 +31,7 @@ var _ = Describe("Handler", func() {
 			Message:   "hello",
 			Timestamp: time.Now(),
 			Level:     log.InfoLevel,
-			Fields: log.FieldMap{
+			Fields: log.Map{
 				"app":     "ginkgo",
 				"int":     int(1),
 				"int8":    int8(1),

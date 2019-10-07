@@ -8,7 +8,7 @@ import (
 var _ Logger = &logger{}
 
 type logger struct {
-	fields  FieldMap
+	fields  Map
 	exit    ExitFunc
 	handler Handler
 }
@@ -18,22 +18,22 @@ func New(cfg *Config) Logger {
 	return &logger{
 		handler: cfg.Handler,
 		exit:    cfg.Exit,
-		fields:  FieldMap{},
+		fields:  Map{},
 	}
 }
 
 // Fields returns the entry
-func (e *logger) Fields() FieldMap {
+func (e *logger) Fields() Map {
 	return e.fields
 }
 
 // WithField returns a new log entry with the supplied field.
 func (e *logger) WithField(key string, value interface{}) Logger {
-	return e.WithFields(FieldMap{key: value})
+	return e.WithFields(Map{key: value})
 }
 
 // WithFields returns a new log entry with the supplied fields appended
-func (e *logger) WithFields(fields FieldMap) Logger {
+func (e *logger) WithFields(fields Map) Logger {
 	w := &logger{
 		handler: e.handler,
 		exit:    e.exit,
