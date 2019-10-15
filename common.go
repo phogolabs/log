@@ -21,16 +21,6 @@ type ExitFunc func(code int)
 // Map is a map
 type Map map[string]interface{}
 
-func (m Map) copy() Map {
-	fields := Map{}
-
-	for key, value := range m {
-		fields[key] = value
-	}
-
-	return fields
-}
-
 // Config is logger's configuration
 type Config struct {
 	Handler Handler

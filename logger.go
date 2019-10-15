@@ -37,7 +37,7 @@ func (e *logger) WithFields(fields Map) Logger {
 	w := &logger{
 		handler: e.handler,
 		exit:    e.exit,
-		fields:  e.fields.copy(),
+		fields:  e.copy(),
 	}
 
 	for key, value := range fields {
@@ -54,177 +54,129 @@ func (e *logger) WithError(err error) Logger {
 
 // Debug logs a debug entry
 func (e *logger) Debug(v ...interface{}) {
-	entry := Entry{
-		Message: fmt.Sprint(v...),
-		Level:   DebugLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(&entry)
+	e.handle(e.entryv(DebugLevel, v))
 }
 
 // Debugf logs a debug entry with formatting
 func (e *logger) Debugf(s string, v ...interface{}) {
-	entry := Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   DebugLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(&entry)
+	e.handle(e.entryf(DebugLevel, s, v))
 }
 
 // Info logs a normal. information, entry
 func (e *logger) Info(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   InfoLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(InfoLevel, v))
 }
 
 // Infof logs a normal. information, entry with formatting
 func (e *logger) Infof(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   InfoLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(InfoLevel, s, v))
 }
 
 // Notice logs a notice log entry
 func (e logger) Notice(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   NoticeLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(NoticeLevel, v))
 }
 
 // Noticef logs a notice log entry with formatting
 func (e logger) Noticef(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   NoticeLevel,
-	}
-	e.handle(entry)
+	e.handle(e.entryf(NoticeLevel, s, v))
 }
 
 // Warn logs a warn log entry
 func (e *logger) Warn(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   WarnLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(WarnLevel, v))
 }
 
 // Warnf logs a warn log entry with formatting
 func (e logger) Warnf(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   WarnLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(WarnLevel, s, v))
 }
 
 // Panic logs a panic log entry
 func (e *logger) Panic(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   PanicLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(PanicLevel, v))
 }
 
 // Panicf logs a panic log entry with formatting
 func (e *logger) Panicf(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   PanicLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(PanicLevel, s, v))
 }
 
 // Alert logs an alert log entry
 func (e *logger) Alert(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   AlertLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(AlertLevel, v))
 }
 
 // Alertf logs an alert log entry with formatting
 func (e *logger) Alertf(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   AlertLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(AlertLevel, s, v))
 }
 
 // Fatal logs a fatal log entry
 func (e *logger) Fatal(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   FatalLevel,
-		Fields:  e.fields.copy(),
-	}
-
-	e.handle(entry)
+	e.handle(e.entryv(FatalLevel, v))
 }
 
 // Fatalf logs a fatal log entry with formatting
 func (e *logger) Fatalf(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   FatalLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(FatalLevel, s, v))
 }
 
 // Error logs an error log entry
 func (e *logger) Error(v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprint(v...),
-		Level:   ErrorLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryv(ErrorLevel, v))
 }
 
 // Errorf logs an error log entry with formatting
 func (e *logger) Errorf(s string, v ...interface{}) {
-	entry := &Entry{
-		Message: fmt.Sprintf(s, v...),
-		Level:   ErrorLevel,
-		Fields:  e.fields.copy(),
-	}
-	e.handle(entry)
+	e.handle(e.entryf(ErrorLevel, s, v))
 }
 
 func (e *logger) handle(entry *Entry) {
-	entry.Timestamp = time.Now()
-
 	if e.handler != nil {
 		e.handler.Handle(entry)
 	}
 
-	if e.exit != nil {
-		switch entry.Level {
-		case PanicLevel:
-			e.exit(1)
-		case FatalLevel:
-			e.exit(1)
-		}
+	if e.exit == nil {
+		return
 	}
+
+	switch entry.Level {
+	case PanicLevel:
+		e.exit(1)
+	case FatalLevel:
+		e.exit(1)
+	}
+}
+
+func (e *logger) entryf(level Level, msg string, v []interface{}) *Entry {
+	entry := e.entry(level)
+	entry.Message = fmt.Sprintf(msg, v...)
+	return entry
+}
+
+func (e *logger) entryv(level Level, v []interface{}) *Entry {
+	entry := e.entry(level)
+	entry.Message = fmt.Sprint(v...)
+	return entry
+}
+
+func (e *logger) entry(level Level) *Entry {
+	entry := &Entry{
+		Timestamp: time.Now(),
+		Level:     level,
+		Fields:    e.copy(),
+	}
+
+	return entry
+}
+
+func (e *logger) copy() Map {
+	fields := Map{}
+
+	for key, value := range e.fields {
+		fields[key] = value
+	}
+
+	return fields
 }
