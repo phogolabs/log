@@ -3,13 +3,15 @@ package log
 import (
 	"fmt"
 	"time"
+
+	"github.com/phogolabs/flaw"
 )
 
 var _ Logger = &logger{}
 
 type logger struct {
 	fields  Map
-	exit    ExitFunc
+	exitFn  ExitFunc
 	handler Handler
 }
 
@@ -17,7 +19,7 @@ type logger struct {
 func New(cfg *Config) Logger {
 	return &logger{
 		handler: cfg.Handler,
-		exit:    cfg.Exit,
+		exitFn:  cfg.Exit,
 		fields:  Map{},
 	}
 }
@@ -36,7 +38,7 @@ func (e *logger) WithField(key string, value interface{}) Logger {
 func (e *logger) WithFields(fields Map) Logger {
 	w := &logger{
 		handler: e.handler,
-		exit:    e.exit,
+		exitFn:  e.exitFn,
 		fields:  e.copy(),
 	}
 
@@ -49,7 +51,17 @@ func (e *logger) WithFields(fields Map) Logger {
 
 // WithError add a minimal stack trace to the log logger
 func (e *logger) WithError(err error) Logger {
-	return e.WithFields(FieldsOfError(err))
+	type Contexter interface {
+		Context() Map
+	}
+
+	context, ok := err.(Contexter)
+	if !ok {
+		stack := flaw.NewStackTraceAt(1)
+		context = flaw.Wrap(err, stack...)
+	}
+
+	return e.WithFields(context.Context())
 }
 
 // Debug logs a debug entry
@@ -92,16 +104,6 @@ func (e logger) Warnf(s string, v ...interface{}) {
 	e.handle(e.entryf(WarnLevel, s, v))
 }
 
-// Panic logs a panic log entry
-func (e *logger) Panic(v ...interface{}) {
-	e.handle(e.entryv(PanicLevel, v))
-}
-
-// Panicf logs a panic log entry with formatting
-func (e *logger) Panicf(s string, v ...interface{}) {
-	e.handle(e.entryf(PanicLevel, s, v))
-}
-
 // Alert logs an alert log entry
 func (e *logger) Alert(v ...interface{}) {
 	e.handle(e.entryv(AlertLevel, v))
@@ -112,14 +114,32 @@ func (e *logger) Alertf(s string, v ...interface{}) {
 	e.handle(e.entryf(AlertLevel, s, v))
 }
 
+// Panic logs a panic log entry
+func (e *logger) Panic(v ...interface{}) {
+	entry := e.entryv(PanicLevel, v)
+	e.handle(entry)
+	e.exit(entry)
+}
+
+// Panicf logs a panic log entry with formatting
+func (e *logger) Panicf(s string, v ...interface{}) {
+	entry := e.entryf(PanicLevel, s, v)
+	e.handle(entry)
+	e.exit(entry)
+}
+
 // Fatal logs a fatal log entry
 func (e *logger) Fatal(v ...interface{}) {
-	e.handle(e.entryv(FatalLevel, v))
+	entry := e.entryv(FatalLevel, v)
+	e.handle(entry)
+	e.exit(entry)
 }
 
 // Fatalf logs a fatal log entry with formatting
 func (e *logger) Fatalf(s string, v ...interface{}) {
-	e.handle(e.entryf(FatalLevel, s, v))
+	entry := e.entryf(FatalLevel, s, v)
+	e.handle(entry)
+	e.exit(entry)
 }
 
 // Error logs an error log entry
@@ -136,17 +156,14 @@ func (e *logger) handle(entry *Entry) {
 	if e.handler != nil {
 		e.handler.Handle(entry)
 	}
+}
 
-	if e.exit == nil {
+func (e *logger) exit(entry *Entry) {
+	if e.exitFn == nil {
 		return
 	}
 
-	switch entry.Level {
-	case PanicLevel:
-		e.exit(1)
-	case FatalLevel:
-		e.exit(1)
-	}
+	e.exitFn(1)
 }
 
 func (e *logger) entryf(level Level, msg string, v []interface{}) *Entry {
@@ -165,7 +182,7 @@ func (e *logger) entry(level Level) *Entry {
 	entry := &Entry{
 		Timestamp: time.Now(),
 		Level:     level,
-		Fields:    e.copy(),
+		Fields:    e.fields,
 	}
 
 	return entry

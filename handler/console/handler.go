@@ -36,7 +36,7 @@ const (
 	equals  = byte('=')
 	newLine = byte('\n')
 	base10  = 10
-	v       = "%v"
+	pattern = "%+v"
 )
 
 var _ log.Handler = &Handler{}
@@ -166,7 +166,7 @@ func (c *Handler) Handle(e *log.Entry) {
 		case bool:
 			line = strconv.AppendBool(line, t)
 		default:
-			line = append(line, fmt.Sprintf(v, value)...)
+			line = append(line, fmt.Sprintf(pattern, value)...)
 		}
 	}
 

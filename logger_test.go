@@ -133,7 +133,7 @@ var _ = Describe("Logger", func() {
 			err := fmt.Errorf("oh no!")
 			e := writer.WithError(err).(log.Logger)
 			Expect(e).NotTo(Equal(entry))
-			Expect(e.Fields()).To(HaveKeyWithValue("error", "oh no!"))
+			Expect(e.Fields()).To(HaveKeyWithValue("error_cause", "oh no!"))
 		})
 	})
 

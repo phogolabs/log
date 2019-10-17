@@ -88,14 +88,14 @@ var _ = Describe("Log", func() {
 
 	Describe("WithError", func() {
 		It("returns a new entry", func() {
-			err := fmt.Errorf("oh no!")
+			err := fmt.Errorf("oh no")
 
 			e := log.WithError(err).(log.Logger)
 			Expect(e.Fields()).To(HaveLen(2))
 
 			fields := e.Fields()
-			Expect(fields).To(HaveKey("source"))
-			Expect(fields).To(HaveKeyWithValue("error", "oh no!"))
+			Expect(fields).To(HaveKey("error_stack"))
+			Expect(fields).To(HaveKeyWithValue("error_cause", "oh no"))
 		})
 	})
 

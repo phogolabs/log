@@ -7,7 +7,7 @@ import (
 
 // standard logger
 var std = &logger{
-	exit:   os.Exit,
+	exitFn: os.Exit,
 	fields: Map{},
 	handler: &LevelHandler{
 		Level:   DebugLevel,
@@ -19,7 +19,7 @@ var std = &logger{
 type ExitFunc func(code int)
 
 // Map is a map
-type Map map[string]interface{}
+type Map = map[string]interface{}
 
 // Config is logger's configuration
 type Config struct {
@@ -100,7 +100,7 @@ type Logger interface {
 
 // SetExitFunc sets the exit function. default: os.Exit
 func SetExitFunc(fn ExitFunc) {
-	std.exit = fn
+	std.exitFn = fn
 }
 
 // SetLevel sets the level handler
