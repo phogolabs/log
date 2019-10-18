@@ -20,9 +20,12 @@ var _ = Describe("Handler", func() {
 
 	BeforeEach(func() {
 		buffer = &bytes.Buffer{}
-		handler = json.New(buffer)
-		handler.SetColor(false)
-		handler.SetPretty(false)
+
+		handler = json.NewConfig(&json.Config{
+			Writer:           buffer,
+			DisplayColor:     true,
+			PrettyFormatting: false,
+		})
 	})
 
 	ItEncodesTheEntry := func() {
@@ -48,10 +51,13 @@ var _ = Describe("Handler", func() {
 
 	Context("when the pretty is on", func() {
 		BeforeEach(func() {
-			handler.SetPretty(true)
+			handler = json.NewConfig(&json.Config{
+				Writer:           buffer,
+				DisplayColor:     false,
+				PrettyFormatting: true,
+			})
 		})
 
 		ItEncodesTheEntry()
 	})
-
 })

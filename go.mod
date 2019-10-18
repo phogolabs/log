@@ -13,7 +13,7 @@ require (
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/onsi/ginkgo v1.10.2
 	github.com/onsi/gomega v1.7.0
-	github.com/phogolabs/flaw v0.0.0-20191018111315-0f18e2b4c7ed
+	github.com/phogolabs/flaw v0.0.0-20191018123734-c23a9e70305e
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b

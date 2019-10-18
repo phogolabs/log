@@ -34,6 +34,13 @@ import (
 
 var _ log.Handler = &Handler{}
 
+// Config is the configuration
+type Config struct {
+	DisplayColor     bool
+	PrettyFormatting bool
+	Writer           io.Writer
+}
+
 // Handler implementation.
 type Handler struct {
 	formatter *Formatter
@@ -41,15 +48,28 @@ type Handler struct {
 	m         sync.Mutex
 }
 
-// New handler.
-func New(writer io.Writer) *Handler {
+// NewConfig creates a handler with a config
+func NewConfig(config *Config) *Handler {
 	formatter := NewFormatter()
 	formatter.ColorFn = colorify
+	formatter.DisabledColor = !config.DisplayColor
+	formatter.DisablePretty = !config.PrettyFormatting
 
 	return &Handler{
-		writer:    writer,
+		writer:    config.Writer,
 		formatter: formatter,
 	}
+}
+
+// New handler.
+func New(writer io.Writer) *Handler {
+	config := &Config{
+		Writer:           writer,
+		DisplayColor:     false,
+		PrettyFormatting: false,
+	}
+
+	return NewConfig(config)
 }
 
 // Handle handles the log entry
@@ -60,16 +80,6 @@ func (h *Handler) Handle(e *log.Entry) {
 	if data, err := h.formatter.Marshal(e); err == nil {
 		fmt.Fprintln(h.writer, string(data))
 	}
-}
-
-// SetPretty enables pretty output
-func (h *Handler) SetPretty(value bool) {
-	h.formatter.DisablePretty = !value
-}
-
-// SetColor enables color formatting
-func (h *Handler) SetColor(value bool) {
-	h.formatter.DisabledColor = !value
 }
 
 func colorify(k, v interface{}) ColorFormatter {

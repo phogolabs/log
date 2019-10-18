@@ -22,10 +22,12 @@ var _ = Describe("Handler", func() {
 
 	BeforeEach(func() {
 		buffer = &bytes.Buffer{}
-		handler = console.New(buffer)
 
-		handler.SetDisplayColor(true)
-		handler.SetTimestampFormat(time.UnixDate)
+		handler = console.NewConfig(&console.Config{
+			Writer:          buffer,
+			DisplayColor:    true,
+			TimestampFormat: time.UnixDate,
+		})
 
 		entry = &log.Entry{
 			Message:   "hello",

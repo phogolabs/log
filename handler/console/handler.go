@@ -25,6 +25,7 @@ package console
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 
 	"github.com/go-playground/ansi"
@@ -36,7 +37,7 @@ const (
 	equals  = byte('=')
 	newLine = byte('\n')
 	base10  = 10
-	pattern = "%+v"
+	pattern = "%v"
 )
 
 var _ log.Handler = &Handler{}
@@ -56,14 +57,6 @@ type Syslogger interface {
 	Write(p []byte) (n int, err error)
 }
 
-// Handler is an instance of the console logger
-type Handler struct {
-	colors          [8]ansi.EscSeq
-	writer          io.Writer
-	timestampFormat string
-	displayColor    bool
-}
-
 // Colors mapping.
 var defaultColors = [...]ansi.EscSeq{
 	log.DebugLevel:  ansi.Green,
@@ -76,26 +69,40 @@ var defaultColors = [...]ansi.EscSeq{
 	log.FatalLevel:  ansi.Red + ansi.Underline + ansi.Blink,
 }
 
-// New creates a new console handler
-func New(writer io.Writer) *Handler {
+// Config is the configuration
+type Config struct {
+	DisplayColor    bool
+	TimestampFormat string
+	Writer          io.Writer
+}
+
+// Handler is an instance of the console logger
+type Handler struct {
+	colors          [8]ansi.EscSeq
+	writer          io.Writer
+	timestampFormat string
+	displayColor    bool
+}
+
+// NewConfig creates a handler with a config
+func NewConfig(config *Config) *Handler {
 	return &Handler{
 		colors:          defaultColors,
-		writer:          writer,
-		timestampFormat: "2006-01-02 15:04:05.000000000Z07:00",
-		displayColor:    true,
+		writer:          config.Writer,
+		timestampFormat: config.TimestampFormat,
+		displayColor:    config.DisplayColor,
 	}
 }
 
-// SetDisplayColor tells Handler to output in color or not
-// Default is : true
-func (c *Handler) SetDisplayColor(value bool) {
-	c.displayColor = value
-}
+// New creates a new console handler
+func New(writer io.Writer) *Handler {
+	config := &Config{
+		Writer:          writer,
+		DisplayColor:    true,
+		TimestampFormat: "2006-01-02 15:04:05.000000000Z07:00",
+	}
 
-// SetTimestampFormat sets Handler's timestamp output format
-// Default is : "2006-01-02T15:04:05.000000000Z07:00"
-func (c *Handler) SetTimestampFormat(format string) {
-	c.timestampFormat = format
+	return NewConfig(config)
 }
 
 // Handle handles the log entry
@@ -125,7 +132,8 @@ func (c *Handler) Handle(e *log.Entry) {
 	line = append(line, space)
 	line = append(line, e.Message...)
 
-	for key, value := range e.Fields {
+	for _, key := range c.keys(e) {
+		value := e.Fields[key]
 		line = append(line, space)
 
 		if len(color) > 0 {
@@ -196,4 +204,15 @@ func (c *Handler) Handle(e *log.Entry) {
 	}
 
 	c.writer.Write(line)
+}
+
+func (c *Handler) keys(e *log.Entry) []string {
+	keys := make([]string, 0, len(e.Fields))
+
+	for key := range e.Fields {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+	return keys
 }
