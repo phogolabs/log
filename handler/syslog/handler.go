@@ -1,30 +1,7 @@
-package console
-
-// The MIT License (MIT)
-
-// Copyright (c) 2018 Go Playground
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+package syslog
 
 import (
 	"fmt"
-	"io"
 	"sort"
 	"strconv"
 
@@ -42,48 +19,45 @@ const (
 
 var _ log.Handler = &Handler{}
 
-// Colors mapping.
-var defaultColors = [...]ansi.EscSeq{
-	log.DebugLevel:  ansi.Green,
-	log.InfoLevel:   ansi.Blue,
-	log.NoticeLevel: ansi.LightCyan,
-	log.WarnLevel:   ansi.LightYellow,
-	log.ErrorLevel:  ansi.LightRed,
-	log.PanicLevel:  ansi.Red,
-	log.AlertLevel:  ansi.Red + ansi.Underline,
-	log.FatalLevel:  ansi.Red + ansi.Underline + ansi.Blink,
+//go:generate counterfeiter -fake-name Syslogger -o ../../fake/syslogger.go . Logger
+
+// Logger writer
+type Logger interface {
+	Alert(m string) error
+	Crit(m string) error
+	Debug(m string) error
+	Emerg(m string) error
+	Err(m string) error
+	Info(m string) error
+	Notice(m string) error
+	Warning(m string) error
+	Write(p []byte) (n int, err error)
 }
 
 // Config is the configuration
 type Config struct {
-	DisplayColor    bool
+	Logger          Logger
 	TimestampFormat string
-	Writer          io.Writer
 }
 
 // Handler is an instance of the console logger
 type Handler struct {
-	colors          [8]ansi.EscSeq
-	writer          io.Writer
+	logger          Logger
 	timestampFormat string
-	displayColor    bool
 }
 
 // NewConfig creates a handler with a config
 func NewConfig(config *Config) *Handler {
 	return &Handler{
-		colors:          defaultColors,
-		writer:          config.Writer,
 		timestampFormat: config.TimestampFormat,
-		displayColor:    config.DisplayColor,
+		logger:          config.Logger,
 	}
 }
 
 // New creates a new console handler
-func New(writer io.Writer) *Handler {
+func New(logger Logger) *Handler {
 	config := &Config{
-		Writer:          writer,
-		DisplayColor:    true,
+		Logger:          logger,
 		TimestampFormat: "2006-01-02 15:04:05.000000000Z07:00",
 	}
 
@@ -100,11 +74,6 @@ func (c *Handler) Handle(e *log.Entry) {
 
 	line = append(line, e.Timestamp.Format(c.timestampFormat)...)
 	line = append(line, space)
-
-	if c.displayColor {
-		color = c.colors[e.Level]
-		line = append(line, color...)
-	}
 
 	level = e.Level.String()
 
@@ -165,7 +134,24 @@ func (c *Handler) Handle(e *log.Entry) {
 
 	line = append(line, newLine)
 
-	c.writer.Write(line)
+	text := string(line)
+
+	switch e.Level {
+	case log.DebugLevel:
+		c.logger.Debug(text)
+	case log.InfoLevel:
+		c.logger.Info(text)
+	case log.NoticeLevel:
+		c.logger.Notice(text)
+	case log.WarnLevel:
+		c.logger.Warning(text)
+	case log.ErrorLevel:
+		c.logger.Err(text)
+	case log.PanicLevel, log.AlertLevel:
+		c.logger.Alert(text)
+	case log.FatalLevel:
+		c.logger.Crit(text)
+	}
 }
 
 func (c *Handler) keys(e *log.Entry) []string {

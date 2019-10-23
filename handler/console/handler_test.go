@@ -9,7 +9,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/phogolabs/log"
-	"github.com/phogolabs/log/fake"
 	"github.com/phogolabs/log/handler/console"
 )
 
@@ -57,56 +56,5 @@ var _ = Describe("Handler", func() {
 		handler.Handle(entry)
 
 		Expect(buffer.String()).To(ContainSubstring("ginkgo"))
-	})
-
-	Context("when the writter is syslog", func() {
-		var syslogger *fake.Syslogger
-
-		BeforeEach(func() {
-			syslogger = &fake.Syslogger{}
-			handler = console.New(syslogger)
-		})
-
-		It("writes to the debug buffer", func() {
-			entry.Level = log.DebugLevel
-			handler.Handle(entry)
-			Expect(syslogger.DebugCallCount()).To(Equal(1))
-		})
-
-		It("writes to the info buffer", func() {
-			entry.Level = log.InfoLevel
-			handler.Handle(entry)
-			Expect(syslogger.InfoCallCount()).To(Equal(1))
-		})
-
-		It("writes to the notice buffer", func() {
-			entry.Level = log.NoticeLevel
-			handler.Handle(entry)
-			Expect(syslogger.NoticeCallCount()).To(Equal(1))
-		})
-
-		It("writes to the warn buffer", func() {
-			entry.Level = log.WarnLevel
-			handler.Handle(entry)
-			Expect(syslogger.WarningCallCount()).To(Equal(1))
-		})
-
-		It("writes to the error buffer", func() {
-			entry.Level = log.ErrorLevel
-			handler.Handle(entry)
-			Expect(syslogger.ErrCallCount()).To(Equal(1))
-		})
-
-		It("writes to the alert buffer", func() {
-			entry.Level = log.AlertLevel
-			handler.Handle(entry)
-			Expect(syslogger.AlertCallCount()).To(Equal(1))
-		})
-
-		It("writes to the critical buffer", func() {
-			entry.Level = log.FatalLevel
-			handler.Handle(entry)
-			Expect(syslogger.CritCallCount()).To(Equal(1))
-		})
 	})
 })
