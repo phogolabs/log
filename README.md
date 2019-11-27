@@ -2,7 +2,7 @@
 
 [![Documentation][godoc-img]][godoc-url]
 ![License][license-img]
-[![Build Status][travis-img]][travis-url]
+[![Build Status][action-img]][action-url]
 [![Coverage][codecov-img]][codecov-url]
 [![Go Report Card][report-img]][report-url]
 
@@ -44,15 +44,15 @@ logger.Info("Hello")
 
 ## Contributing
 
-We are welcome to any contributions. Just fork the
+We are open for any contributions. Just fork the
 [project](https://github.com/phogolabs/log).
 
 [report-img]: https://goreportcard.com/badge/github.com/phogolabs/log
 [report-url]: https://goreportcard.com/report/github.com/phogolabs/log
 [codecov-url]: https://codecov.io/gh/phogolabs/log
 [codecov-img]: https://codecov.io/gh/phogolabs/log/branch/master/graph/badge.svg
-[travis-img]: https://travis-ci.org/phogolabs/log.svg?branch=master
-[travis-url]: https://travis-ci.org/phogolabs/log
+[action-img]: https://github.com/phogolabs/log/workflows/pipeline/badge.svg
+[action-url]: https://github.com/phogolabs/log/actions
 [log-url]: https://github.com/phogolabs/prana
 [godoc-url]: https://godoc.org/github.com/phogolabs/log
 [godoc-img]: https://godoc.org/github.com/phogolabs/log?status.svg
