@@ -51,7 +51,7 @@ We are open for any contributions. Just fork the
 [report-url]: https://goreportcard.com/report/github.com/phogolabs/log
 [codecov-url]: https://codecov.io/gh/phogolabs/log
 [codecov-img]: https://codecov.io/gh/phogolabs/log/branch/master/graph/badge.svg
-[action-img]: https://github.com/phogolabs/log/workflows/pipeline/badge.svg
+[action-img]: https://github.com/phogolabs/log/workflows/main/badge.svg
 [action-url]: https://github.com/phogolabs/log/actions
 [log-url]: https://github.com/phogolabs/prana
 [godoc-url]: https://godoc.org/github.com/phogolabs/log
