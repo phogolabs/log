@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/phogolabs/log"
@@ -12,20 +13,23 @@ import (
 
 // Config is the configuration of the handler
 type Config struct {
-	Writer io.Writer
+	ProjectID string
+	Writer    io.Writer
 }
 
 var _ log.Handler = &Handler{}
 
 // Handler implementation.
 type Handler struct {
-	writer io.Writer
+	projectID string
+	writer    io.Writer
 }
 
 // New returns the default implementation of a Client.
 func New(config *Config) *Handler {
 	return &Handler{
-		writer: config.Writer,
+		projectID: config.ProjectID,
+		writer:    config.Writer,
 	}
 }
 
@@ -37,8 +41,14 @@ func (h *Handler) Handle(e *log.Entry) {
 		Severity:    h.severity(e.Level),
 	}
 
-	if trace, ok := e.Fields["trace"]; ok {
-		entry.Trace = trace
+	if h.projectID != "" {
+		if trace, ok := e.Fields["trace_context"].(string); ok {
+			if parts := strings.Split(trace, "/"); len(parts) > 0 {
+				if head := parts[0]; len(head) > 0 {
+					entry.Trace = fmt.Sprintf("projects/%s/traces/%s", h.projectID, head)
+				}
+			}
+		}
 	}
 
 	if data, err := json.Marshal(&e.Fields); err == nil {
