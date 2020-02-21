@@ -37,6 +37,10 @@ func (h *Handler) Handle(e *log.Entry) {
 		Severity:    h.severity(e.Level),
 	}
 
+	if trace, ok := e.Fields["trace"]; ok {
+		entry.Trace = trace
+	}
+
 	if data, err := json.Marshal(&e.Fields); err == nil {
 		entry.JsonPayload = data
 	}
