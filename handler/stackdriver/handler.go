@@ -71,8 +71,8 @@ type Handler struct {
 	writer    io.Writer
 }
 
-// New returns the default implementation of a Client.
-func New(config *Config) *Handler {
+// NewConfig returns the default implementation of a Client for given config.
+func NewConfig(config *Config) *Handler {
 	return &Handler{
 		projectID: config.ProjectID,
 		writer:    config.Writer,
