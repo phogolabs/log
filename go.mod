@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/onsi/ginkgo v1.12.0
-	github.com/onsi/gomega v1.8.1
+	github.com/onsi/gomega v1.9.0
 	github.com/phogolabs/flaw v0.0.0-20191023065131-ef10f45475ef
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
