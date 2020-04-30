@@ -4,7 +4,7 @@ require (
 	github.com/apex/log v1.1.1 // indirect
 	github.com/aws/aws-sdk-go v1.30.17
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/fatih/color v1.7.0
+	github.com/fatih/color v1.9.0
 	github.com/go-playground/ansi v2.1.0+incompatible
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
