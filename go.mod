@@ -2,7 +2,7 @@ module github.com/phogolabs/log
 
 require (
 	github.com/apex/log v1.1.1 // indirect
-	github.com/aws/aws-sdk-go v1.30.17
+	github.com/aws/aws-sdk-go v1.30.25
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/ansi v2.1.0+incompatible
