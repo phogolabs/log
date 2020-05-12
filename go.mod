@@ -17,7 +17,7 @@ require (
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b
 	golang.org/x/sys v0.0.0-20191018095205-727590c5006e // indirect
-	google.golang.org/api v0.22.0
+	google.golang.org/api v0.24.0
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
 
