@@ -13,7 +13,7 @@ require (
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b
-	google.golang.org/api v0.27.0
+	google.golang.org/api v0.28.0
 )
 
 go 1.13
