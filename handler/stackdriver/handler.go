@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"time"
 
 	"github.com/phogolabs/log"
@@ -89,12 +88,8 @@ func (h *Handler) Handle(e *log.Entry) {
 	}
 
 	if h.projectID != "" {
-		if trace, ok := e.Fields["trace_context"].(string); ok {
-			if parts := strings.Split(trace, "/"); len(parts) > 0 {
-				if head := parts[0]; len(head) > 0 {
-					entry.Trace = fmt.Sprintf("projects/%s/traces/%s", h.projectID, head)
-				}
-			}
+		if trace, ok := e.Fields["trace_id"].(string); ok {
+			entry.Trace = fmt.Sprintf("projects/%s/traces/%s", h.projectID, trace)
 		}
 	}
 
