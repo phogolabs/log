@@ -1,10 +1,12 @@
 module github.com/phogolabs/log
 
 require (
+	cloud.google.com/go v0.64.0
 	github.com/apex/log v1.4.0 // indirect
 	github.com/aws/aws-sdk-go v1.34.9
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/ansi v2.1.0+incompatible
+	github.com/googleapis/gax-go v1.0.3 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/onsi/ginkgo v1.14.0
@@ -13,8 +15,7 @@ require (
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b
-	golang.org/x/sys v0.0.0-20200620081246-981b61492c35 // indirect
-	google.golang.org/genproto v0.0.0-20200620020550-bd6e04640131 // indirect
+	google.golang.org/api v0.30.0 // indirect
 )
 
 go 1.13

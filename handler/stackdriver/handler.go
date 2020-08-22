@@ -1,11 +1,13 @@
 package stackdriver
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"time"
 
+	"cloud.google.com/go/errorreporting"
 	"github.com/phogolabs/log"
 )
 
@@ -34,6 +36,9 @@ type LogEntry struct {
 	// projects/my-projectid/traces/06796866738c859f2f19b7cfb3214824
 	Trace string `json:"trace,omitempty"`
 
+	// SpanID represents the span identitifer
+	SpanID string `json:"span_id"`
+
 	// Severity: Optional. The severity of the log entry. The default value
 	// is LogSeverity.DEFAULT.
 	//
@@ -59,6 +64,8 @@ type LogEntry struct {
 // Config is the configuration of the handler
 type Config struct {
 	ProjectID string
+	Service   string
+	Version   string
 	Writer    io.Writer
 }
 
@@ -67,14 +74,27 @@ var _ log.Handler = &Handler{}
 // Handler implementation.
 type Handler struct {
 	projectID string
+	reporter  *errorreporting.Client
 	writer    io.Writer
 }
 
 // NewConfig returns the default implementation of a Client for given config.
 func NewConfig(config *Config) *Handler {
+	reporter, err := errorreporting.NewClient(context.TODO(), config.ProjectID,
+		errorreporting.Config{
+			ServiceName:    config.Service,
+			ServiceVersion: config.Version,
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
 	return &Handler{
 		projectID: config.ProjectID,
 		writer:    config.Writer,
+		reporter:  reporter,
 	}
 }
 
@@ -93,8 +113,36 @@ func (h *Handler) Handle(e *log.Entry) {
 		}
 	}
 
+	if span, ok := e.Fields["span_id"]; ok {
+		entry.SpanID = fmt.Sprintf("%v", span)
+	}
+
 	if data, err := json.Marshal(&entry); err == nil {
 		fmt.Fprintln(h.writer, string(data))
+	}
+
+	report := errorreporting.Entry{}
+
+	if report.Error == nil {
+		if message, ok := e.Fields["error_cause"]; ok {
+			report.Error = fmt.Errorf("%v", message)
+		}
+	}
+
+	if report.Error == nil {
+		if message, ok := e.Fields["error_message"]; ok {
+			report.Error = fmt.Errorf("%v", message)
+		}
+	}
+
+	if stack, ok := e.Fields["error_stack"]; ok {
+		report.Stack = []byte(
+			fmt.Sprintf("%v", stack),
+		)
+	}
+
+	if report.Error != nil {
+		h.reporter.ReportSync(context.TODO(), report)
 	}
 }
 
