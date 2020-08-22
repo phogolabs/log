@@ -142,7 +142,9 @@ func (h *Handler) Handle(e *log.Entry) {
 	}
 
 	if report.Error != nil {
-		h.reporter.ReportSync(context.TODO(), report)
+		if err := h.reporter.ReportSync(context.TODO(), report); err != nil {
+			fmt.Fprintln(h.writer, err.Error())
+		}
 	}
 }
 
