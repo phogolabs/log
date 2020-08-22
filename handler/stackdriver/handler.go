@@ -88,8 +88,8 @@ func (h *Handler) Handle(e *log.Entry) {
 	}
 
 	if h.projectID != "" {
-		if trace, ok := e.Fields["trace_id"].(string); ok {
-			entry.Trace = fmt.Sprintf("projects/%s/traces/%s", h.projectID, trace)
+		if trace, ok := e.Fields["trace_id"]; ok {
+			entry.Trace = fmt.Sprintf("projects/%s/traces/%v", h.projectID, trace)
 		}
 	}
 
