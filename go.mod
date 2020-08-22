@@ -6,7 +6,6 @@ require (
 	github.com/aws/aws-sdk-go v1.34.9
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/ansi v2.1.0+incompatible
-	github.com/googleapis/gax-go v1.0.3 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/onsi/ginkgo v1.14.0
@@ -15,7 +14,6 @@ require (
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b
-	google.golang.org/api v0.30.0 // indirect
 )
 
 go 1.13
