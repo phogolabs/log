@@ -1,7 +1,7 @@
 module github.com/phogolabs/log
 
 require (
-	cloud.google.com/go v0.64.0
+	cloud.google.com/go v0.65.0
 	github.com/apex/log v1.4.0 // indirect
 	github.com/aws/aws-sdk-go v1.34.9
 	github.com/fatih/color v1.9.0
