@@ -3,7 +3,7 @@ module github.com/phogolabs/log
 require (
 	cloud.google.com/go v0.64.0
 	github.com/apex/log v1.4.0 // indirect
-	github.com/aws/aws-sdk-go v1.34.9
+	github.com/aws/aws-sdk-go v1.35.20
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/ansi v2.1.0+incompatible
 	github.com/jpillora/backoff v1.0.0 // indirect
