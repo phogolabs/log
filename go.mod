@@ -5,7 +5,7 @@ go 1.13
 require (
 	cloud.google.com/go v0.78.0
 	github.com/apex/log v1.9.0 // indirect
-	github.com/aws/aws-sdk-go v1.37.20
+	github.com/aws/aws-sdk-go v1.37.24
 	github.com/fatih/color v1.10.0
 	github.com/go-playground/ansi v2.1.0+incompatible
 	github.com/jpillora/backoff v1.0.0 // indirect
