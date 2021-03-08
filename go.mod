@@ -11,7 +11,7 @@ require (
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.14.0
-	github.com/onsi/gomega v1.10.1
+	github.com/onsi/gomega v1.11.0
 	github.com/phogolabs/flaw v0.0.0-20210108012932-e1cf67d6edb4
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.2.0
