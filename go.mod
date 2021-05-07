@@ -11,7 +11,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.14.0
-	github.com/onsi/gomega v1.10.1
+	github.com/onsi/gomega v1.10.3
 	github.com/phogolabs/flaw v0.0.0-20210306145544-6984b46f2d8f
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.4.0
