@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.81.0
 	github.com/apex/log v1.9.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.29
-	github.com/fatih/color v1.10.0
+	github.com/fatih/color v1.11.0
 	github.com/go-playground/ansi v2.1.0+incompatible
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
