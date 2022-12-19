@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"time"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/phogolabs/log"
 	"github.com/phogolabs/log/handler/console"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Handler", func() {

@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/phogolabs/log"
@@ -46,7 +45,6 @@ var _ = Describe("Level", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(data).To(Equal([]byte("\"INFO\"")))
 		})
-
 	})
 
 	Describe("UnmarshalJSON", func() {

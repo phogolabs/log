@@ -3,16 +3,15 @@ package json_test
 import (
 	"time"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/onsi/gomega/gbytes"
 	"github.com/phogolabs/log"
 	"github.com/phogolabs/log/handler/json"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Handler", func() {
-
 	var (
 		buffer  *gbytes.Buffer
 		handler *json.Handler
