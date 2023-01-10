@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.162
 	github.com/fatih/color v1.13.0
 	github.com/go-playground/ansi v2.1.0+incompatible
-	github.com/onsi/ginkgo/v2 v2.6.1
+	github.com/onsi/ginkgo/v2 v2.7.0
 	github.com/onsi/gomega v1.24.1
 	github.com/phogolabs/flaw v0.0.0-20210430130223-f948049b189e
 	github.com/rogpeppe/fastuuid v1.2.0
