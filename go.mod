@@ -7,8 +7,8 @@ require (
 	github.com/aws/aws-sdk-go v1.44.162
 	github.com/fatih/color v1.13.0
 	github.com/go-playground/ansi v2.1.0+incompatible
-	github.com/onsi/ginkgo/v2 v2.7.0
-	github.com/onsi/gomega v1.24.1
+	github.com/onsi/ginkgo/v2 v2.8.1
+	github.com/onsi/gomega v1.26.0
 	github.com/phogolabs/flaw v0.0.0-20210430130223-f948049b189e
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/rollbar/rollbar-go v1.4.5
@@ -32,11 +32,11 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.4.0 // indirect
+	golang.org/x/net v0.6.0 // indirect
 	golang.org/x/oauth2 v0.3.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/api v0.105.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37 // indirect
